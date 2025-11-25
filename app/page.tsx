@@ -1,65 +1,111 @@
+import Link from "next/link";
 import Image from "next/image";
+import { Music, Users, CheckCircle, Zap } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-linear-to-b from-blue-600 to-blue-900 text-white">
+      {/* Hero Section with Background Image */}
+      <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image Overlay */}
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1200&h=600&fit=crop"
+            alt="DJ performing at event"
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          {/* Dark overlay gradient */}
+          <div className="absolute inset-0 bg-linear-to-b from-blue-600/80 via-blue-700/85 to-blue-900/90"></div>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+          <Music className="w-20 h-20 mx-auto mb-6 drop-shadow-lg" />
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg">
+            Find Your Perfect DJ
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl md:text-2xl mb-8 text-blue-100 drop-shadow-md">
+            Connect with professional DJs for your next event on Mix Factory
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <Link
+              href="/dj/listing"
+              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition shadow-lg"
+            >
+              Browse DJs
+            </Link>
+            <Link
+              href="/auth/signin"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-blue-600 transition shadow-lg"
+            >
+              Get Started
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Floating decorative elements */}
+        <div className="absolute bottom-10 left-10 opacity-10">
+          <Music className="w-40 h-40 text-white" />
         </div>
-      </main>
+        <div className="absolute top-20 right-10 opacity-10">
+          <Music className="w-32 h-32 text-white" />
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="bg-white text-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+            Why Choose Mix Factory?
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="text-center">
+              <Users className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">Verified DJs</h3>
+              <p className="text-gray-600">
+                All DJs are verified and have professional credentials
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="text-center">
+              <CheckCircle className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">Secure Bookings</h3>
+              <p className="text-gray-600">
+                Safe and secure booking process with payment protection
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="text-center">
+              <Zap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">Quick Booking</h3>
+              <p className="text-gray-600">
+                Book your favorite DJ in just a few clicks
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="bg-blue-700 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold mb-4">Are you a DJ?</h2>
+          <p className="text-lg mb-6 text-blue-100">
+            Join our platform and reach more customers
+          </p>
+          <Link
+            href="/auth/signin"
+            className="bg-white text-blue-700 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition inline-block"
+          >
+            Register as DJ
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,208 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  USER
+  DJ
+  ADMIN
+}
+
+enum DJStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  djProfile     DJProfile?
+  bookingsAsUser Booking[] @relation("bookingUser")
+  accounts      Account[]
+  sessions      Session[]
+  
+  @@index([email])
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+  
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  
+  @@unique([identifier, token])
+}
+
+model DJProfile {
+  id                String      @id @default(cuid())
+  userId            String      @unique
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Profile Information
+  bio               String?     @db.Text
+  genres            String[]    @default([])
+  hourlyRate        Float
+  experience        Int         // years of experience
+  status            DJStatus    @default(PENDING)
+  
+  // Files (S3 URLs)
+  profileImage      String?
+  portfolioUrl      String?
+  credentials       String[]    @default([]) // Array of S3 URLs for DJ licenses, certifications, etc.
+  
+  // Contact & Social
+  instagram         String?
+  twitter           String?
+  website           String?
+  phone             String?
+  
+  // Location & Availability
+  city              String?
+  state             String?
+  zipCode           String?
+  latitude          Float?
+  longitude         Float?
+  radius            Int?        // Service radius in miles
+  
+  // Verification
+  verifiedAt        DateTime?
+  verificationNotes String?     @db.Text
+  rejectionReason   String?     @db.Text
+  
+  // Stats
+  rating            Float       @default(0)
+  totalBookings     Int         @default(0)
+  totalReviews      Int         @default(0)
+  
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  // Relations
+  bookings          Booking[]
+  reviews           Review[]
+  
+  @@index([status])
+  @@index([userId])
+}
+
+model Booking {
+  id                String        @id @default(cuid())
+  
+  // User & DJ
+  userId            String
+  user              User          @relation("bookingUser", fields: [userId], references: [id], onDelete: Cascade)
+  
+  djId              String
+  dj                DJProfile     @relation(fields: [djId], references: [id], onDelete: Cascade)
+  
+  // Event Details
+  eventDate         DateTime
+  eventDuration     Int           // minutes
+  eventLocation     String
+  eventType         String        // wedding, party, corporate, etc.
+  eventNotes        String?       @db.Text
+  
+  // Booking Status
+  status            BookingStatus @default(PENDING)
+  confirmedAt       DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  cancellationReason String?
+  
+  // Pricing
+  quotedPrice       Float?
+  finalPrice        Float?
+  
+  // Contact Information
+  contactEmail      String
+  contactPhone      String
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  review            Review?
+  
+  @@index([userId])
+  @@index([djId])
+  @@index([status])
+}
+
+model Review {
+  id                String    @id @default(cuid())
+  
+  bookingId         String    @unique
+  booking           Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  djId              String
+  dj                DJProfile @relation(fields: [djId], references: [id], onDelete: Cascade)
+  
+  rating            Int       // 1-5
+  comment           String?   @db.Text
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([djId])
+}
+
+model AdminLog {
+  id                String    @id @default(cuid())
+  action            String    // VERIFY, REJECT, SUSPEND, etc.
+  targetDJId        String?
+  targetBookingId   String?
+  notes             String?   @db.Text
+  adminId           String
+  
+  createdAt         DateTime  @default(now())
+  
+  @@index([adminId])
+  @@index([createdAt])
+}

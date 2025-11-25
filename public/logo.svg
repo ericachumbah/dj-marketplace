@@ -1,0 +1,80 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#2563eb" stroke="#1e40af" stroke-width="3"/>
+  
+  <!-- Outer decorative ring -->
+  <circle cx="100" cy="100" r="95" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.5"/>
+  
+  <!-- Left turntable -->
+  <g id="turntable-left">
+    <!-- Turntable base -->
+    <circle cx="60" cy="85" r="28" fill="#1e40af"/>
+    <circle cx="60" cy="85" r="25" fill="#3b82f6"/>
+    
+    <!-- Vinyl record grooves -->
+    <circle cx="60" cy="85" r="22" fill="#1e3a8a" opacity="0.6"/>
+    <circle cx="60" cy="85" r="18" fill="#3b82f6"/>
+    <circle cx="60" cy="85" r="14" fill="#1e3a8a" opacity="0.8"/>
+    <circle cx="60" cy="85" r="10" fill="#0f172a"/>
+    
+    <!-- Center spindle -->
+    <circle cx="60" cy="85" r="4" fill="#fbbf24"/>
+  </g>
+  
+  <!-- Right turntable -->
+  <g id="turntable-right">
+    <!-- Turntable base -->
+    <circle cx="140" cy="85" r="28" fill="#1e40af"/>
+    <circle cx="140" cy="85" r="25" fill="#3b82f6"/>
+    
+    <!-- Vinyl record grooves -->
+    <circle cx="140" cy="85" r="22" fill="#1e3a8a" opacity="0.6"/>
+    <circle cx="140" cy="85" r="18" fill="#3b82f6"/>
+    <circle cx="140" cy="85" r="14" fill="#1e3a8a" opacity="0.8"/>
+    <circle cx="140" cy="85" r="10" fill="#0f172a"/>
+    
+    <!-- Center spindle -->
+    <circle cx="140" cy="85" r="4" fill="#fbbf24"/>
+  </g>
+  
+  <!-- Mixer/Control panel in center -->
+  <g id="mixer">
+    <!-- Main panel -->
+    <rect x="80" y="65" width="40" height="50" rx="4" fill="#1e3a8a" stroke="#60a5fa" stroke-width="2"/>
+    
+    <!-- Faders -->
+    <rect x="85" y="70" width="6" height="35" rx="2" fill="#3b82f6" stroke="#60a5fa" stroke-width="1"/>
+    <rect x="94" y="72" width="6" height="33" rx="2" fill="#3b82f6" stroke="#60a5fa" stroke-width="1"/>
+    <rect x="103" y="68" width="6" height="37" rx="2" fill="#3b82f6" stroke="#60a5fa" stroke-width="1"/>
+    
+    <!-- Knobs -->
+    <circle cx="85" cy="62" r="2.5" fill="#fbbf24"/>
+    <circle cx="94" cy="62" r="2.5" fill="#fbbf24"/>
+    <circle cx="103" cy="62" r="2.5" fill="#fbbf24"/>
+  </g>
+  
+  <!-- Sound waves -->
+  <g id="soundwaves" stroke="#fbbf24" stroke-width="2" fill="none" stroke-linecap="round">
+    <!-- Left wave -->
+    <path d="M 45 85 Q 50 80 55 85"/>
+    <path d="M 40 85 Q 45 75 50 85"/>
+    
+    <!-- Right wave -->
+    <path d="M 145 85 Q 150 80 155 85"/>
+    <path d="M 150 85 Q 155 75 160 85"/>
+  </g>
+  
+  <!-- Equalizer bars at bottom -->
+  <g id="equalizer">
+    <rect x="75" y="130" width="4" height="18" rx="2" fill="#fbbf24" opacity="0.9"/>
+    <rect x="82" y="125" width="4" height="23" rx="2" fill="#fbbf24" opacity="0.9"/>
+    <rect x="89" y="128" width="4" height="20" rx="2" fill="#fbbf24" opacity="0.9"/>
+    <rect x="96" y="122" width="4" height="26" rx="2" fill="#fbbf24" opacity="0.9"/>
+    <rect x="103" y="127" width="4" height="21" rx="2" fill="#fbbf24" opacity="0.9"/>
+    <rect x="110" y="124" width="4" height="24" rx="2" fill="#fbbf24" opacity="0.9"/>
+    <rect x="117" y="129" width="4" height="19" rx="2" fill="#fbbf24" opacity="0.9"/>
+  </g>
+  
+  <!-- Highlight/shine effect -->
+  <circle cx="75" cy="70" r="12" fill="white" opacity="0.15"/>
+</svg>
