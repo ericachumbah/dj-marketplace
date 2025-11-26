@@ -16,7 +16,8 @@ export async function GET(req: NextRequest) {
 
     // Build filter
     const where: Record<string, unknown> = {
-      status: "VERIFIED", // Only show verified DJs
+      // Show all DJs regardless of verification status (or only VERIFIED if you want strict verification)
+      // Removing status filter to show PENDING DJs as well
     };
 
     if (genre) {
