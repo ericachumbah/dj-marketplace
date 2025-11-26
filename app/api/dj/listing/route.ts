@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Map to response format
-    const djsWithStats = djs.map((dj) => ({
+    const djsWithStats = (djs || []).map((dj) => ({
       ...dj,
       totalReviews: 0,
       totalBookings: 0,
@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       {
-        djs: djsWithStats,
+        djs: djsWithStats || [],
         pagination: {
           page,
           limit,
@@ -103,7 +103,11 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Get DJs Error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch DJs" },
+      { 
+        error: "Failed to fetch DJs",
+        djs: [],
+        pagination: { page: 1, limit: 10, total: 0, pages: 0 }
+      },
       { status: 500 }
     );
   }
