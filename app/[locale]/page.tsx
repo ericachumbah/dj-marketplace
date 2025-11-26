@@ -3,8 +3,13 @@ import Image from "next/image";
 import { Music, Users, CheckCircle, Zap } from "lucide-react";
 import { getTranslations, type Locale } from "@/lib/i18n";
 
-export default function Home({ params }: { params: { locale: Locale } }) {
-  const t = getTranslations(params.locale);
+export default async function Home({ 
+  params 
+}: { 
+  params: Promise<{ locale: Locale }> 
+}) {
+  const { locale } = await params;
+  const t = getTranslations(locale);
 
   return (
     <div className="min-h-screen bg-linear-to-b from-blue-600 to-blue-900 text-white">
@@ -34,13 +39,13 @@ export default function Home({ params }: { params: { locale: Locale } }) {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link
-              href={`/${params.locale}/dj/listing`}
+              href={`/${locale}/dj/listing`}
               className="bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition shadow-lg"
             >
               {t.hero.cta}
             </Link>
             <Link
-              href={`/${params.locale}/auth/signin`}
+              href={`/${locale}/auth/signin`}
               className="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-blue-600 transition shadow-lg"
             >
               {t.nav.signIn}
@@ -102,7 +107,7 @@ export default function Home({ params }: { params: { locale: Locale } }) {
             Join our platform and reach more customers
           </p>
           <Link
-            href={`/${params.locale}/auth/signin`}
+            href={`/${locale}/auth/signin`}
             className="bg-white text-blue-700 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition inline-block"
           >
             {t.dj.register}
