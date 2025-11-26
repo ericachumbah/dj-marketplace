@@ -1,30 +1,56 @@
-import { prisma } from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
+const prisma = new PrismaClient();
 
 async function main() {
   console.log("Seeding database...");
 
-  // Create test users
-  const user1 = await prisma.user.create({
-    data: {
-      email: "test@example.com",
-      name: "Test User",
+  // Hash demo passwords
+  const demoPassword = await bcrypt.hash("demo123", 10);
+  const djPassword = await bcrypt.hash("dj123", 10);
+  const adminPassword = await bcrypt.hash("admin123", 10);
+
+  // Create demo users with hashed passwords
+  const user1 = await prisma.user.upsert({
+    where: { email: "demo@example.com" },
+    update: {},
+    create: {
+      email: "demo@example.com",
+      name: "Demo User",
+      password: demoPassword,
       role: "USER",
     },
   });
 
-  // Create admin user
-  const adminUser = await prisma.user.create({
-    data: {
+  const djUser = await prisma.user.upsert({
+    where: { email: "dj@example.com" },
+    update: {},
+    create: {
+      email: "dj@example.com",
+      name: "Demo DJ",
+      password: djPassword,
+      role: "DJ",
+    },
+  });
+
+  const adminUser = await prisma.user.upsert({
+    where: { email: "admin@example.com" },
+    update: {},
+    create: {
       email: "admin@example.com",
       name: "Admin User",
+      password: adminPassword,
       role: "ADMIN",
     },
   });
 
-  // Create sample DJ profiles
-  const dj1 = await prisma.dJProfile.create({
-    data: {
-      userId: user1.id,
+  // Create sample DJ profile for DJ user
+  await prisma.dJProfile.upsert({
+    where: { userId: djUser.id },
+    update: {},
+    create: {
+      userId: djUser.id,
       bio: "Professional DJ with 10 years of experience",
       genres: ["House", "Techno", "Deep House"],
       hourlyRate: 150,
@@ -42,9 +68,10 @@ async function main() {
   });
 
   console.log("✅ Database seeded successfully!");
-  console.log("Test user:", user1.email);
-  console.log("Admin user:", adminUser.email);
-  console.log("Sample DJ:", dj1.id);
+  console.log("Demo Credentials:");
+  console.log("  - Email: demo@example.com | Password: demo123 (USER)");
+  console.log("  - Email: dj@example.com | Password: dj123 (DJ)");
+  console.log("  - Email: admin@example.com | Password: admin123 (ADMIN)");
 }
 
 main()

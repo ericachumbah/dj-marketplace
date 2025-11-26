@@ -1,30 +1,9 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
-// Demo user database
-const demoUsers: Record<string, any> = {
-  "demo@example.com": {
-    id: "1",
-    email: "demo@example.com",
-    name: "Demo User",
-    password: "demo",
-    role: "USER",
-  },
-  "dj@example.com": {
-    id: "2",
-    email: "dj@example.com",
-    name: "Demo DJ",
-    password: "demo",
-    role: "DJ",
-  },
-  "admin@example.com": {
-    id: "3",
-    email: "admin@example.com",
-    name: "Admin User",
-    password: "demo",
-    role: "ADMIN",
-  },
-};
+const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -39,17 +18,34 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = demoUsers[credentials.email];
-        if (!user || user.password !== credentials.password) {
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          });
+
+          if (!user || !user.password) {
+            return null;
+          }
+
+          const passwordMatch = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+
+          if (!passwordMatch) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("Auth error:", error);
           return null;
         }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
       },
     }),
   ],
