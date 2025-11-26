@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -21,6 +21,14 @@ interface DJFormData {
   latitude: string;
   longitude: string;
   radius: string;
+}
+
+interface DJProfile extends DJFormData {
+  id: string;
+  userId: string;
+  profileImage?: string;
+  credentials: string[];
+  status: string;
 }
 
 const genreOptions = [
@@ -47,7 +55,9 @@ export default function DJRegistrationForm() {
   const { data: session } = useSession();
   const locale = pathname.split("/")[1] || "en";
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState({
     profile: "",
     credentials: [] as string[],
@@ -69,6 +79,44 @@ export default function DJRegistrationForm() {
     longitude: "",
     radius: "",
   });
+
+  // Load existing profile on component mount
+  useEffect(() => {
+    if (!session?.user) return;
+
+    fetch("/api/dj/profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.id) {
+          // Profile exists - load it for editing
+          setIsEditMode(true);
+          setFormData({
+            bio: data.bio || "",
+            genres: data.genres || [],
+            hourlyRate: data.hourlyRate?.toString() || "",
+            experience: data.experience?.toString() || "",
+            instagram: data.instagram || "",
+            twitter: data.twitter || "",
+            website: data.website || "",
+            phone: data.phone || "",
+            city: data.city || "",
+            state: data.state || "",
+            zipCode: data.zipCode || "",
+            latitude: data.latitude?.toString() || "",
+            longitude: data.longitude?.toString() || "",
+            radius: data.radius?.toString() || "",
+          });
+          if (data.profileImage) {
+            setUploadedFiles((prev) => ({ ...prev, profile: data.profileImage }));
+          }
+          if (data.credentials && Array.isArray(data.credentials)) {
+            setUploadedFiles((prev) => ({ ...prev, credentials: data.credentials }));
+          }
+        }
+      })
+      .catch((err) => console.error("Error loading profile:", err))
+      .finally(() => setPageLoading(false));
+  }, [session]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -125,8 +173,9 @@ export default function DJRegistrationForm() {
     }
 
     try {
+      const method = isEditMode ? "PUT" : "POST";
       const response = await fetch("/api/dj/profile", {
-        method: "POST",
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -139,10 +188,10 @@ export default function DJRegistrationForm() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to create profile");
+        throw new Error(data.error || `Failed to ${isEditMode ? "update" : "create"} profile`);
       }
 
-      router.push("/dj/dashboard");
+      router.push(`/${locale}/dj/dashboard`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       console.error("Profile creation error:", err);
@@ -197,7 +246,9 @@ export default function DJRegistrationForm() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-3xl font-bold mb-8">DJ Registration</h1>
+        <h1 className="text-3xl font-bold mb-8">
+          {pageLoading ? "Loading..." : isEditMode ? "Edit DJ Profile" : "DJ Registration"}
+        </h1>
 
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
@@ -205,12 +256,26 @@ export default function DJRegistrationForm() {
           </div>
         )}
 
+        {pageLoading ? (
+          <div className="text-center py-8">
+            <p className="text-gray-600">Loading your profile...</p>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Profile Image */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Profile Picture
             </label>
+            {uploadedFiles.profile && (
+              <div className="mb-4 flex justify-center">
+                <img 
+                  src={uploadedFiles.profile} 
+                  alt="Profile preview" 
+                  className="w-32 h-32 rounded-full object-cover border-2 border-gray-300"
+                />
+              </div>
+            )}
             <FileUpload
               endpoint="/api/dj/upload"
               fileType="profile"
@@ -218,7 +283,7 @@ export default function DJRegistrationForm() {
               accept="image/*"
             />
             {uploadedFiles.profile && (
-              <p className="mt-2 text-sm text-green-600">Profile image uploaded</p>
+              <p className="mt-2 text-sm text-green-600">✓ Profile image {isEditMode ? "updated" : "uploaded"}</p>
             )}
           </div>
 
@@ -411,9 +476,16 @@ export default function DJRegistrationForm() {
             disabled={loading}
             className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Creating Profile..." : "Create DJ Profile"}
+            {loading 
+              ? isEditMode 
+                ? "Updating Profile..." 
+                : "Creating Profile..." 
+              : isEditMode 
+              ? "Update DJ Profile" 
+              : "Create DJ Profile"}
           </button>
         </form>
+        )}
       </div>
     </div>
   );

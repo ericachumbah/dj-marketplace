@@ -32,15 +32,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate a mock URL with a proper image (in production, upload to S3)
-    const timestamp = Date.now();
-    const initials = (session.user.name || "DJ").split(" ").map(n => n[0]).join("").toUpperCase();
-    const mockUrl = `https://ui-avatars.com/api/?name=${initials}&size=400&background=2563eb&color=fff`;
+    // Convert file to base64 for data URI
+    const buffer = await file.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString("base64");
+    const dataUri = `data:${file.type};base64,${base64}`;
 
     return NextResponse.json(
       {
-        url: mockUrl,
-        key: `dj-files/${session.user.id}/${type}/${timestamp}`,
+        url: dataUri,
+        key: `dj-files/${session.user.id}/${type}/${Date.now()}`,
         size: file.size,
         type,
       },

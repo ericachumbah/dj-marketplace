@@ -101,14 +101,21 @@ export default function DJDashboardPage() {
             {/* Profile Card */}
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Profile Information</h2>
-              {djProfile.profileImage && (
-                <Image
-                  src={djProfile.profileImage}
-                  alt="Profile"
-                  width={128}
-                  height={128}
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
-                />
+              {djProfile.profileImage ? (
+                <div className="flex justify-center mb-4">
+                  <Image
+                    src={djProfile.profileImage}
+                    alt="Profile"
+                    width={128}
+                    height={128}
+                    className="w-32 h-32 rounded-full object-cover border-2 border-gray-300"
+                    priority={false}
+                  />
+                </div>
+              ) : (
+                <div className="w-32 h-32 rounded-full mx-auto mb-4 bg-gray-200 flex items-center justify-center border-2 border-gray-300 text-gray-500">
+                  No Photo
+                </div>
               )}
               <dl className="space-y-4">
                 <div>
