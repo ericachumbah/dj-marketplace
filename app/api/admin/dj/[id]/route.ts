@@ -1,7 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession, type Session } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { prisma } from "@/lib/prisma";
+
+// Mock DJ data for development
+const mockDJs: Record<string, any> = {
+  "dj-1": {
+    id: "dj-1",
+    userId: "user-1",
+    user: { id: "user-1", name: "John Doe", email: "john@example.com" },
+    status: "PENDING",
+    genres: ["House", "Techno"],
+    hourlyRate: 150,
+    experience: 5,
+    city: "New York",
+    bio: "Professional DJ with 5 years of experience",
+    credentials: [],
+    createdAt: new Date("2024-01-15"),
+  },
+  "dj-2": {
+    id: "dj-2",
+    userId: "user-2",
+    user: { id: "user-2", name: "Jane Smith", email: "jane@example.com" },
+    status: "PENDING",
+    genres: ["Hip-Hop", "R&B"],
+    hourlyRate: 200,
+    experience: 8,
+    city: "Los Angeles",
+    bio: "Experienced hip-hop DJ",
+    credentials: [],
+    createdAt: new Date("2024-01-20"),
+  },
+  "dj-3": {
+    id: "dj-3",
+    userId: "user-3",
+    user: { id: "user-3", name: "Mike Johnson", email: "mike@example.com" },
+    status: "VERIFIED",
+    genres: ["Afrobeats", "Makossa"],
+    hourlyRate: 180,
+    experience: 10,
+    city: "Atlanta",
+    bio: "Afrobeats specialist",
+    credentials: [],
+    createdAt: new Date("2024-01-10"),
+  },
+};
 
 async function requireAdmin(session: Session | null): Promise<boolean> {
   if (!session?.user || session.user.role !== "ADMIN") {
@@ -24,14 +66,7 @@ export async function GET(
       );
     }
 
-    const djProfile = await prisma.dJProfile.findUnique({
-      where: { id: params.id },
-      include: {
-        user: true,
-        bookings: true,
-        reviews: true,
-      },
-    });
+    const djProfile = mockDJs[params.id];
 
     if (!djProfile) {
       return NextResponse.json(
@@ -74,28 +109,19 @@ export async function PUT(
       );
     }
 
-    const djProfile = await prisma.dJProfile.update({
-      where: { id: params.id },
-      data: {
-        status,
-        verificationNotes,
-        verifiedAt: status === "VERIFIED" ? new Date() : null,
-      },
-    });
-
-    // Log admin action
-    if (session?.user?.id) {
-      await prisma.adminLog.create({
-        data: {
-          action: status === "VERIFIED" ? "VERIFY" : "REJECT",
-          targetDJId: params.id,
-          notes: verificationNotes,
-          adminId: session.user.id,
-        },
-      });
+    // Update mock DJ
+    if (mockDJs[params.id]) {
+      mockDJs[params.id].status = status;
+      mockDJs[params.id].verificationNotes = verificationNotes;
+      if (status === "VERIFIED") {
+        mockDJs[params.id].verifiedAt = new Date();
+      }
     }
 
-    return NextResponse.json(djProfile);
+    return NextResponse.json({
+      ...mockDJs[params.id],
+      message: "DJ status updated successfully",
+    });
   } catch (error) {
     console.error("Update DJ Status Error:", error);
     return NextResponse.json(

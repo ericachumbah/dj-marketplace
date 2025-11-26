@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -30,11 +30,29 @@ export async function POST(req: NextRequest) {
       latitude,
       longitude,
       radius,
+      profileImage,
+      credentials,
     } = body;
+
+    // Get or create user
+    let user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: session.user.email,
+          name: session.user.name || undefined,
+          image: session.user.image || undefined,
+          role: "DJ",
+        },
+      });
+    }
 
     // Check if DJ profile already exists
     const existingProfile = await prisma.dJProfile.findUnique({
-      where: { userId: session.user.id },
+      where: { userId: user.id },
     });
 
     if (existingProfile) {
@@ -47,7 +65,7 @@ export async function POST(req: NextRequest) {
     // Create DJ profile
     const djProfile = await prisma.dJProfile.create({
       data: {
-        userId: session.user.id,
+        userId: user.id,
         bio,
         genres: genres || [],
         hourlyRate: parseFloat(hourlyRate),
@@ -62,20 +80,17 @@ export async function POST(req: NextRequest) {
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
         radius: radius ? parseInt(radius) : null,
+        profileImage,
+        credentials: credentials || [],
       },
-    });
-
-    // Update user role to DJ
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: { role: "DJ" },
     });
 
     return NextResponse.json(djProfile, { status: 201 });
   } catch (error) {
     console.error("Create DJ Profile Error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to create DJ profile";
     return NextResponse.json(
-      { error: "Failed to create DJ profile" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
@@ -85,15 +100,26 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       );
     }
 
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
     const djProfile = await prisma.dJProfile.findUnique({
-      where: { userId: session.user.id },
+      where: { userId: user.id },
     });
 
     if (!djProfile) {
@@ -117,17 +143,28 @@ export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       );
     }
 
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
     const body = await req.json();
 
     const djProfile = await prisma.dJProfile.update({
-      where: { userId: session.user.id },
+      where: { userId: user.id },
       data: {
         ...body,
         hourlyRate: body.hourlyRate ? parseFloat(body.hourlyRate) : undefined,

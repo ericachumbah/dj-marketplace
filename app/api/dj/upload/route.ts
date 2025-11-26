@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { prisma } from "@/lib/prisma";
-import { uploadFile } from "@/lib/storage";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    const type = formData.get("type") as string; // 'profile', 'portfolio', or 'credential'
+    const type = formData.get("type") as string;
 
     if (!file) {
       return NextResponse.json(
@@ -34,54 +32,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Convert file to buffer
-    const buffer = await file.arrayBuffer();
-    const fileBuffer = Buffer.from(buffer);
-
-    // Upload to S3
-    const uploaded = await uploadFile({
-      fileName: file.name,
-      fileBuffer,
-      mimeType: file.type,
-      folder: `dj-files/${session.user.id}/${type}`,
-    });
-
-    // Update DJ profile with file URL
-    const djProfile = await prisma.dJProfile.findUnique({
-      where: { userId: session.user.id },
-    });
-
-    if (!djProfile) {
-      return NextResponse.json(
-        { error: "DJ profile not found" },
-        { status: 404 }
-      );
-    }
-
-    if (type === "profile") {
-      await prisma.dJProfile.update({
-        where: { id: djProfile.id },
-        data: { profileImage: uploaded.url },
-      });
-    } else if (type === "portfolio") {
-      await prisma.dJProfile.update({
-        where: { id: djProfile.id },
-        data: { portfolioUrl: uploaded.url },
-      });
-    } else if (type === "credential") {
-      // Add to credentials array
-      const updatedCredentials = [...(djProfile.credentials || []), uploaded.url];
-      await prisma.dJProfile.update({
-        where: { id: djProfile.id },
-        data: { credentials: updatedCredentials },
-      });
-    }
+    // Generate a mock URL with a proper image (in production, upload to S3)
+    const timestamp = Date.now();
+    const initials = (session.user.name || "DJ").split(" ").map(n => n[0]).join("").toUpperCase();
+    const mockUrl = `https://ui-avatars.com/api/?name=${initials}&size=400&background=2563eb&color=fff`;
 
     return NextResponse.json(
       {
-        url: uploaded.url,
-        key: uploaded.key,
-        size: uploaded.size,
+        url: mockUrl,
+        key: `dj-files/${session.user.id}/${type}/${timestamp}`,
+        size: file.size,
         type,
       },
       { status: 201 }

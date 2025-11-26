@@ -104,6 +104,23 @@ export default function DJRegistrationForm() {
     setLoading(true);
     setError("");
 
+    // Validate required fields
+    if (!formData.hourlyRate) {
+      setError("Hourly rate is required");
+      setLoading(false);
+      return;
+    }
+    if (!formData.experience) {
+      setError("Years of experience is required");
+      setLoading(false);
+      return;
+    }
+    if (formData.genres.length === 0) {
+      setError("Please select at least one genre");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch("/api/dj/profile", {
         method: "POST",
@@ -122,9 +139,10 @@ export default function DJRegistrationForm() {
         throw new Error(data.error || "Failed to create profile");
       }
 
-      router.push("/dashboard/dj");
+      router.push("/dj/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Profile creation error:", err);
     } finally {
       setLoading(false);
     }
