@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import FileUpload from "@/components/common/FileUpload";
 
 interface DJFormData {
@@ -42,7 +43,9 @@ const genreOptions = [
 
 export default function DJRegistrationForm() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
+  const locale = pathname.split("/")[1] || "en";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState({
@@ -150,8 +153,43 @@ export default function DJRegistrationForm() {
 
   if (!session?.user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Please sign in first</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
+          <h1 className="text-3xl font-bold mb-4">Become a DJ</h1>
+          <p className="text-gray-600 mb-8">Create an account to get started with your DJ profile</p>
+          
+          <div className="space-y-4">
+            <Link
+              href={`/${locale}/auth/signup`}
+              className="block w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition"
+            >
+              Create Account
+            </Link>
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">or</span>
+              </div>
+            </div>
+
+            <Link
+              href={`/${locale}/auth/signin`}
+              className="block w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-medium hover:bg-gray-300 transition"
+            >
+              Sign In
+            </Link>
+          </div>
+
+          <p className="mt-6 text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link href={`/${locale}/auth/signin`} className="text-blue-600 hover:underline font-medium">
+              Sign in here
+            </Link>
+          </p>
+        </div>
       </div>
     );
   }

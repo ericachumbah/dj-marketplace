@@ -57,13 +57,21 @@ export default function Navigation() {
                 </button>
               </>
             ) : (
-              <Link
-                href={`/${locale}/auth/signin`}
-                className="flex items-center gap-2 hover:text-blue-100"
-              >
-                <LogIn className="w-4 h-4" />
-                Sign In
-              </Link>
+              <>
+                <Link
+                  href={`/${locale}/auth/signup`}
+                  className="flex items-center gap-2 bg-white text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-50"
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  href={`/${locale}/auth/signin`}
+                  className="flex items-center gap-2 hover:text-blue-100"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </Link>
+              </>
             )}
             <div className="pl-4 border-l border-blue-400">
               <LanguageSwitcher />
@@ -118,12 +126,20 @@ export default function Navigation() {
                 </button>
               </>
             ) : (
-              <Link
-                href={`/${locale}/auth/signin`}
-                className="block px-2 py-2 hover:bg-blue-700 rounded"
-              >
-                Sign In
-              </Link>
+              <>
+                <Link
+                  href={`/${locale}/auth/signup`}
+                  className="block px-2 py-2 hover:bg-blue-700 rounded font-medium"
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  href={`/${locale}/auth/signin`}
+                  className="block px-2 py-2 hover:bg-blue-700 rounded"
+                >
+                  Sign In
+                </Link>
+              </>
             )}
           </div>
         )}

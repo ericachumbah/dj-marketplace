@@ -133,11 +133,17 @@ function SignInForm() {
       </div>
 
       {/* Links */}
-      <div className="mt-6 text-center text-sm text-gray-600">
+      <div className="mt-6 text-center text-sm text-gray-600 space-y-3">
         <p>
           New here?{" "}
-          <Link href={`/${locale}/dj/register`} className="text-blue-600 hover:underline">
-            Register as DJ
+          <Link href={`/${locale}/auth/signup`} className="text-blue-600 hover:underline font-medium">
+            Create account
+          </Link>
+        </p>
+        <p className="border-t pt-3">
+          Want to become a DJ?{" "}
+          <Link href={`/${locale}/dj/register`} className="text-blue-600 hover:underline font-medium">
+            Register here
           </Link>
         </p>
       </div>
