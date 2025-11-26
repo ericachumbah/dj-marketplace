@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { Menu, X, LogOut, LogIn } from "lucide-react";
 import { useState } from "react";
@@ -21,14 +20,10 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href={`/${locale}`} className="flex items-center gap-3 font-bold text-lg whitespace-nowrap">
-            <Image 
-              src="/logo.svg" 
-              alt="Mix Factory" 
-              width={32} 
-              height={32}
-              className="h-8 w-8 shrink-0"
-            />
+          <Link href={`/${locale}`} className="flex items-center gap-2 font-bold text-xl">
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-blue-600 font-bold text-sm">
+              MF
+            </div>
             <span>Mix Factory</span>
           </Link>
 
