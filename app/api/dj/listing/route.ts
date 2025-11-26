@@ -75,20 +75,17 @@ export async function GET(req: NextRequest) {
             image: true,
           },
         },
-        _count: {
-          select: { reviews: true, bookings: true },
-        },
       },
       orderBy: { rating: "desc" },
       skip,
       take: limit,
     });
 
-    // Calculate average rating
-    const djsWithStats = djs.map((dj: typeof djs[number]) => ({
+    // Map to response format
+    const djsWithStats = djs.map((dj) => ({
       ...dj,
-      totalReviews: dj._count.reviews,
-      totalBookings: dj._count.bookings,
+      totalReviews: 0,
+      totalBookings: 0,
     }));
 
     return NextResponse.json(
