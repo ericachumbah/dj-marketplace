@@ -174,27 +174,45 @@ export default function DJRegistrationForm() {
 
     try {
       const method = isEditMode ? "PUT" : "POST";
+      const payload = {
+        bio: formData.bio,
+        genres: formData.genres || [],
+        hourlyRate: formData.hourlyRate,
+        experience: formData.experience,
+        instagram: formData.instagram,
+        twitter: formData.twitter,
+        website: formData.website,
+        phone: formData.phone,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        latitude: formData.latitude || "",
+        longitude: formData.longitude || "",
+        radius: formData.radius || "",
+        profileImage: uploadedFiles.profile,
+        credentials: uploadedFiles.credentials || [],
+      };
+
+      console.log("Sending payload:", payload);
+
       const response = await fetch("/api/dj/profile", {
         method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...formData,
-          profileImage: uploadedFiles.profile,
-          credentials: uploadedFiles.credentials,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         const data = await response.json();
+        console.error("API Error:", data);
         throw new Error(data.error || `Failed to ${isEditMode ? "update" : "create"} profile`);
       }
 
       router.push(`/${locale}/dj/dashboard`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
-      console.error("Profile creation error:", err);
+      console.error("Profile error:", err);
     } finally {
       setLoading(false);
     }

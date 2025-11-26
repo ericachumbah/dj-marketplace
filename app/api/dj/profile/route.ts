@@ -163,20 +163,54 @@ export async function PUT(req: NextRequest) {
 
     const body = await req.json();
 
+    // Build update data with only valid fields
+    const updateData: any = {};
+
+    // Text fields
+    if (body.bio !== undefined) updateData.bio = body.bio;
+    if (body.instagram !== undefined) updateData.instagram = body.instagram;
+    if (body.twitter !== undefined) updateData.twitter = body.twitter;
+    if (body.website !== undefined) updateData.website = body.website;
+    if (body.phone !== undefined) updateData.phone = body.phone;
+    if (body.city !== undefined) updateData.city = body.city;
+    if (body.state !== undefined) updateData.state = body.state;
+    if (body.zipCode !== undefined) updateData.zipCode = body.zipCode;
+    if (body.profileImage !== undefined) updateData.profileImage = body.profileImage;
+    if (body.credentials !== undefined) updateData.credentials = body.credentials;
+
+    // Number fields
+    if (body.hourlyRate !== undefined) {
+      updateData.hourlyRate = parseFloat(body.hourlyRate);
+    }
+    if (body.experience !== undefined) {
+      updateData.experience = parseInt(body.experience);
+    }
+    if (body.latitude !== undefined) {
+      updateData.latitude = body.latitude ? parseFloat(body.latitude) : null;
+    }
+    if (body.longitude !== undefined) {
+      updateData.longitude = body.longitude ? parseFloat(body.longitude) : null;
+    }
+    if (body.radius !== undefined) {
+      updateData.radius = body.radius ? parseInt(body.radius) : null;
+    }
+
+    // Array fields
+    if (body.genres !== undefined) {
+      updateData.genres = body.genres || [];
+    }
+
     const djProfile = await prisma.dJProfile.update({
       where: { userId: user.id },
-      data: {
-        ...body,
-        hourlyRate: body.hourlyRate ? parseFloat(body.hourlyRate) : undefined,
-        experience: body.experience ? parseInt(body.experience) : undefined,
-      },
+      data: updateData,
     });
 
     return NextResponse.json(djProfile);
   } catch (error) {
     console.error("Update DJ Profile Error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to update DJ profile";
     return NextResponse.json(
-      { error: "Failed to update DJ profile" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
