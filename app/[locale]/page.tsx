@@ -6,10 +6,10 @@ import { getTranslations, type Locale } from "@/lib/i18n";
 export default async function Home({ 
   params 
 }: { 
-  params: Promise<{ locale: Locale }> 
+  params: Promise<{ locale: string }> 
 }) {
-  const { locale } = await params;
-  const t = getTranslations(locale);
+  const { locale = "en" } = await params;
+  const t = getTranslations(locale as Locale);
 
   return (
     <div className="min-h-screen bg-linear-to-b from-blue-600 to-blue-900 text-white">
