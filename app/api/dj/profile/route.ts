@@ -175,24 +175,35 @@ export async function PUT(req: NextRequest) {
     if (body.city !== undefined) updateData.city = body.city;
     if (body.state !== undefined) updateData.state = body.state;
     if (body.zipCode !== undefined) updateData.zipCode = body.zipCode;
-    if (body.profileImage !== undefined) updateData.profileImage = body.profileImage;
-    if (body.credentials !== undefined) updateData.credentials = body.credentials;
+    if (body.profileImage !== undefined && body.profileImage !== "") updateData.profileImage = body.profileImage;
+    if (body.credentials !== undefined && Array.isArray(body.credentials)) updateData.credentials = body.credentials;
 
     // Number fields
-    if (body.hourlyRate !== undefined) {
-      updateData.hourlyRate = parseFloat(body.hourlyRate);
+    if (body.hourlyRate !== undefined && body.hourlyRate !== "") {
+      const rate = parseFloat(body.hourlyRate);
+      if (!isNaN(rate)) updateData.hourlyRate = rate;
     }
-    if (body.experience !== undefined) {
-      updateData.experience = parseInt(body.experience);
+    if (body.experience !== undefined && body.experience !== "") {
+      const exp = parseInt(body.experience);
+      if (!isNaN(exp)) updateData.experience = exp;
     }
-    if (body.latitude !== undefined) {
-      updateData.latitude = body.latitude ? parseFloat(body.latitude) : null;
+    if (body.latitude !== undefined && body.latitude !== "") {
+      const lat = parseFloat(body.latitude);
+      if (!isNaN(lat)) updateData.latitude = lat;
+    } else if (body.latitude === "") {
+      updateData.latitude = null;
     }
-    if (body.longitude !== undefined) {
-      updateData.longitude = body.longitude ? parseFloat(body.longitude) : null;
+    if (body.longitude !== undefined && body.longitude !== "") {
+      const lng = parseFloat(body.longitude);
+      if (!isNaN(lng)) updateData.longitude = lng;
+    } else if (body.longitude === "") {
+      updateData.longitude = null;
     }
-    if (body.radius !== undefined) {
-      updateData.radius = body.radius ? parseInt(body.radius) : null;
+    if (body.radius !== undefined && body.radius !== "") {
+      const rad = parseInt(body.radius);
+      if (!isNaN(rad)) updateData.radius = rad;
+    } else if (body.radius === "") {
+      updateData.radius = null;
     }
 
     // Array fields
