@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 
 function SignInForm() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const searchParams = useSearchParams();
@@ -31,7 +32,7 @@ function SignInForm() {
     try {
       const result = await signIn("credentials", { 
         email, 
-        password: "demo", 
+        password, 
         redirect: false,
         callbackUrl: `/${locale}/dashboard`
       });
@@ -76,6 +77,20 @@ function SignInForm() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="you@example.com"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your password"
             required
           />
         </div>
@@ -124,17 +139,6 @@ function SignInForm() {
           <Link href={`/${locale}/dj/register`} className="text-blue-600 hover:underline">
             Register as DJ
           </Link>
-        </p>
-      </div>
-
-      {/* Demo Credentials */}
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-        <p className="font-semibold text-blue-900 mb-2">Demo Credentials:</p>
-        <p className="text-blue-800">
-          Email: <code className="bg-white px-2 py-1 rounded">demo@example.com</code>
-        </p>
-        <p className="text-blue-800">
-          Password: <code className="bg-white px-2 py-1 rounded">demo</code>
         </p>
       </div>
     </>
