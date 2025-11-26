@@ -21,15 +21,15 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href={`/${locale}`} className="flex items-center gap-2 font-bold text-xl">
+          <Link href={`/${locale}`} className="flex items-center gap-3 font-bold text-lg whitespace-nowrap">
             <Image 
               src="/logo.svg" 
               alt="Mix Factory" 
-              width={40} 
-              height={40}
-              className="h-10 w-10"
+              width={32} 
+              height={32}
+              className="h-8 w-8 shrink-0"
             />
-            Mix Factory
+            <span>Mix Factory</span>
           </Link>
 
           {/* Desktop Menu */}
