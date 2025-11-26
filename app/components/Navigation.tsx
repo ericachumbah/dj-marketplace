@@ -5,18 +5,23 @@ import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { Menu, X, LogOut, LogIn } from "lucide-react";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 
 export default function Navigation() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  
+  // Extract locale from pathname
+  const locale = pathname.split("/")[1] || "en";
 
   return (
     <nav className="bg-blue-600 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+          <Link href={`/${locale}`} className="flex items-center gap-2 font-bold text-xl">
             <Image 
               src="/logo.svg" 
               alt="Mix Factory" 
@@ -29,20 +34,20 @@ export default function Navigation() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/dj/listing" className="hover:text-blue-100">
+            <Link href={`/${locale}/dj/listing`} className="hover:text-blue-100">
               Browse DJs
             </Link>
             {session?.user ? (
               <>
                 <Link
-                  href="/dashboard"
+                  href={`/${locale}/dashboard`}
                   className="hover:text-blue-100"
                 >
                   Dashboard
                 </Link>
                 {session.user.role === "ADMIN" && (
                   <Link
-                    href="/admin"
+                    href={`/${locale}/admin`}
                     className="hover:text-blue-100"
                   >
                     Admin
@@ -58,7 +63,7 @@ export default function Navigation() {
               </>
             ) : (
               <Link
-                href="/auth/signin"
+                href={`/${locale}/auth/signin`}
                 className="flex items-center gap-2 hover:text-blue-100"
               >
                 <LogIn className="w-4 h-4" />
@@ -89,7 +94,7 @@ export default function Navigation() {
         {isOpen && (
           <div className="md:hidden pb-4 space-y-2">
             <Link
-              href="/dj/listing"
+              href={`/${locale}/dj/listing`}
               className="block px-2 py-2 hover:bg-blue-700 rounded"
             >
               Browse DJs
@@ -97,14 +102,14 @@ export default function Navigation() {
             {session?.user ? (
               <>
                 <Link
-                  href="/dashboard"
+                  href={`/${locale}/dashboard`}
                   className="block px-2 py-2 hover:bg-blue-700 rounded"
                 >
                   Dashboard
                 </Link>
                 {session.user.role === "ADMIN" && (
                   <Link
-                    href="/admin"
+                    href={`/${locale}/admin`}
                     className="block px-2 py-2 hover:bg-blue-700 rounded"
                   >
                     Admin
@@ -119,7 +124,7 @@ export default function Navigation() {
               </>
             ) : (
               <Link
-                href="/auth/signin"
+                href={`/${locale}/auth/signin`}
                 className="block px-2 py-2 hover:bg-blue-700 rounded"
               >
                 Sign In
