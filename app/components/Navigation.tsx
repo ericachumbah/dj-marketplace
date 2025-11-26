@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { Menu, X, LogOut, LogIn } from "lucide-react";
 import { useState } from "react";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 
 export default function Navigation() {
   const { data: session } = useSession();
@@ -64,19 +65,24 @@ export default function Navigation() {
                 Sign In
               </Link>
             )}
+            <div className="pl-4 border-l border-blue-400">
+              <LanguageSwitcher />
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden"
-          >
-            {isOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+          <div className="md:hidden flex items-center gap-4">
+            <LanguageSwitcher />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}

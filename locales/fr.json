@@ -1,0 +1,36 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "browse": "Parcourir les DJs",
+    "register": "S'inscrire en tant que DJ",
+    "dashboard": "Tableau de bord",
+    "admin": "Admin",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter"
+  },
+  "hero": {
+    "title": "Trouvez Votre DJ Parfait",
+    "subtitle": "Découvrez des DJs talentueux pour votre prochain événement",
+    "cta": "Parcourir les DJs"
+  },
+  "dj": {
+    "registration": "Inscription DJ",
+    "profile": "Profil",
+    "genres": "Genres",
+    "hourlyRate": "Tarif Horaire",
+    "experience": "Années d'Expérience",
+    "bio": "Biographie",
+    "city": "Ville",
+    "register": "S'inscrire en tant que DJ",
+    "complete": "Complétez Votre Profil"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "nav": {
+    "home": "Home",
+    "browse": "Browse DJs",
+    "register": "Register as DJ",
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "hero": {
+    "title": "Find Your Perfect DJ",
+    "subtitle": "Discover talented DJs for your next event",
+    "cta": "Browse DJs"
+  },
+  "dj": {
+    "registration": "DJ Registration",
+    "profile": "Profile",
+    "genres": "Genres",
+    "hourlyRate": "Hourly Rate",
+    "experience": "Years of Experience",
+    "bio": "Biography",
+    "city": "City",
+    "register": "Register as DJ",
+    "complete": "Complete Your Profile"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  }
+}
