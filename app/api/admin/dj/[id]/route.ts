@@ -54,7 +54,7 @@ async function requireAdmin(session: Session | null): Promise<boolean> {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -66,7 +66,8 @@ export async function GET(
       );
     }
 
-    const djProfile = mockDJs[params.id];
+    const { id } = await params;
+    const djProfile = mockDJs[id];
 
     if (!djProfile) {
       return NextResponse.json(
@@ -87,7 +88,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -99,6 +100,7 @@ export async function PUT(
       );
     }
 
+    const { id } = await params;
     const body = await req.json();
     const { status, verificationNotes } = body;
 
@@ -110,16 +112,16 @@ export async function PUT(
     }
 
     // Update mock DJ
-    if (mockDJs[params.id]) {
-      mockDJs[params.id].status = status;
-      mockDJs[params.id].verificationNotes = verificationNotes;
+    if (mockDJs[id]) {
+      mockDJs[id].status = status;
+      mockDJs[id].verificationNotes = verificationNotes;
       if (status === "VERIFIED") {
-        mockDJs[params.id].verifiedAt = new Date();
+        mockDJs[id].verifiedAt = new Date();
       }
     }
 
     return NextResponse.json({
-      ...mockDJs[params.id],
+      ...mockDJs[id],
       message: "DJ status updated successfully",
     });
   } catch (error) {
