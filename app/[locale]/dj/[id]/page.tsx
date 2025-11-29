@@ -156,7 +156,7 @@ export default function DJProfilePage() {
                 <div className="flex flex-wrap gap-6">
                   <div>
                     <div className="text-sm opacity-90">Hourly Rate</div>
-                    <div className="text-2xl font-bold">${dj.hourlyRate}</div>
+                    <div className="text-2xl font-bold">€{dj.hourlyRate}</div>
                   </div>
                   <div>
                     <div className="text-sm opacity-90">Experience</div>

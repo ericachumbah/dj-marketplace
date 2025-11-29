@@ -123,7 +123,7 @@ export default function DJDashboardPage() {
                 </div>
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Hourly Rate</dt>
-                  <dd className="text-gray-900">${djProfile.hourlyRate}/hr</dd>
+                  <dd className="text-gray-900">€{djProfile.hourlyRate}/hr</dd>
                 </div>
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Experience</dt>
