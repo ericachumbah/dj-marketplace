@@ -165,7 +165,7 @@ export default function DJListing() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Min Rate ($)
+                Min Rate (€)
               </label>
               <input
                 type="number"
@@ -179,7 +179,7 @@ export default function DJListing() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Max Rate ($)
+                Max Rate (€)
               </label>
               <input
                 type="number"
@@ -253,7 +253,7 @@ export default function DJListing() {
                       <div className="flex items-center text-gray-700 mb-2">
                         <DollarSign className="w-4 h-4 mr-1" />
                         <span className="text-sm font-medium">
-                          ${dj.hourlyRate}/hour
+                          €{dj.hourlyRate}/hour
                         </span>
                       </div>
 
