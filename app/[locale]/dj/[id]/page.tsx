@@ -97,28 +97,28 @@ export default function DJProfilePage() {
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           {/* Profile Header */}
-          <div className="bg-linear-to-r from-blue-600 to-blue-800 p-8 text-white">
-            <div className="flex flex-col md:flex-row gap-6 items-start md:items-end">
+          <div className="bg-linear-to-r from-blue-600 to-blue-800 p-4 sm:p-8 text-white">
+            <div className="flex flex-col gap-6 items-center sm:items-start md:flex-row md:items-end">
               {/* Profile Image */}
-              <div className="shrink-0">
+              <div className="shrink-0 mx-auto sm:mx-0">
                 {dj.profileImage ? (
                   <Image
                     src={dj.profileImage}
                     alt={dj.user.name || "DJ"}
                     width={160}
                     height={160}
-                    className="w-40 h-40 rounded-full object-cover border-4 border-white"
+                    className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-white"
                   />
                 ) : (
-                  <div className="w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center border-4 border-white">
-                    <Music className="w-20 h-20 text-gray-400" />
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gray-300 flex items-center justify-center border-4 border-white">
+                    <Music className="w-16 h-16 sm:w-20 sm:h-20 text-gray-400" />
                   </div>
                 )}
               </div>
 
               {/* DJ Info */}
-              <div className="flex-1">
-                <h1 className="text-4xl font-bold mb-2">{dj.user.name || "DJ"}</h1>
+              <div className="flex-1 text-center sm:text-left w-full">
+                <h1 className="text-2xl sm:text-4xl font-bold mb-2">{dj.user.name || "DJ"}</h1>
                 
                 {/* Status Badge */}
                 <div className="mb-3">
@@ -153,7 +153,7 @@ export default function DJProfilePage() {
                 </div>
 
                 {/* Quick Info */}
-                <div className="flex flex-wrap gap-6">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 justify-center sm:justify-start">
                   <div>
                     <div className="text-sm opacity-90">Hourly Rate</div>
                     <div className="text-2xl font-bold">€{dj.hourlyRate}</div>
@@ -172,18 +172,18 @@ export default function DJProfilePage() {
           </div>
 
           {/* Content */}
-          <div className="p-8">
+          <div className="p-4 sm:p-8">
             {/* Bio */}
             {dj.bio && (
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">About</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">About</h2>
                 <p className="text-gray-700 leading-relaxed">{dj.bio}</p>
               </div>
             )}
 
             {/* Genres */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">Genres</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Genres</h2>
               <div className="flex flex-wrap gap-2">
                 {dj.genres.map((genre) => (
                   <span
@@ -199,7 +199,7 @@ export default function DJProfilePage() {
             {/* Location */}
             {(dj.city || dj.state || dj.zipCode) && (
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">Location</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Location</h2>
                 <div className="flex items-start gap-3">
                   <MapPin className="w-6 h-6 text-gray-600 mt-1 shrink-0" />
                   <div className="text-gray-700">
@@ -211,24 +211,26 @@ export default function DJProfilePage() {
 
             {/* Contact & Social */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact & Social</h2>
-              <div className="flex flex-wrap gap-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Contact & Social</h2>
+              <div className="flex flex-wrap gap-2 sm:gap-4">
                 {dj.user.email && (
                   <a
                     href={`mailto:${dj.user.email}`}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
                   >
-                    <Mail className="w-5 h-5" />
-                    <span>{dj.user.email}</span>
+                    <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden sm:inline">{dj.user.email}</span>
+                    <span className="sm:hidden">Email</span>
                   </a>
                 )}
                 {dj.phone && (
                   <a
                     href={`tel:${dj.phone}`}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
                   >
-                    <Phone className="w-5 h-5" />
-                    <span>{dj.phone}</span>
+                    <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden sm:inline">{dj.phone}</span>
+                    <span className="sm:hidden">Phone</span>
                   </a>
                 )}
                 {dj.website && (
@@ -247,10 +249,11 @@ export default function DJProfilePage() {
                     href={`https://instagram.com/${dj.instagram.replace("@", "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
                   >
-                    <Instagram className="w-5 h-5" />
-                    <span>{dj.instagram}</span>
+                    <Instagram className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden sm:inline">{dj.instagram}</span>
+                    <span className="sm:hidden">IG</span>
                   </a>
                 )}
                 {dj.twitter && (
@@ -258,21 +261,22 @@ export default function DJProfilePage() {
                     href={`https://twitter.com/${dj.twitter.replace("@", "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
                   >
-                    <Twitter className="w-5 h-5" />
-                    <span>{dj.twitter}</span>
+                    <Twitter className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden sm:inline">{dj.twitter}</span>
+                    <span className="sm:hidden">X</span>
                   </a>
                 )}
               </div>
             </div>
 
             {/* CTA */}
-            <div className="flex gap-4 mt-8">
-              <button className="flex-1 px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
+            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+              <button className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
                 Book Now
               </button>
-              <button className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-lg hover:bg-gray-300 transition">
+              <button className="px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-lg hover:bg-gray-300 transition">
                 Contact
               </button>
             </div>
