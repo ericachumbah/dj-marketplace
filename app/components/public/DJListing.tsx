@@ -50,7 +50,8 @@ const genreOptions = [
 
 export default function DJListing() {
   const [djs, setDjs] = useState<DJ[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
@@ -68,6 +69,7 @@ export default function DJListing() {
 
   const fetchDJs = async (page = 1) => {
     setLoading(true);
+    setError("");
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -82,10 +84,17 @@ export default function DJListing() {
       const response = await fetch(`/api/dj/listing?${params}`);
       const data = await response.json();
 
-      setDjs(data.djs);
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch DJs");
+      }
+
+      setDjs(data.djs || []);
       setPagination(data.pagination);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Error fetching DJs";
+      setError(errorMsg);
       console.error("Error fetching DJs:", error);
+      setDjs([]);
     } finally {
       setLoading(false);
     }
@@ -208,6 +217,11 @@ export default function DJListing() {
         </div>
 
         {/* DJ Cards */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
         {loading ? (
           <div className="text-center py-12">
             <p>Loading DJs...</p>
