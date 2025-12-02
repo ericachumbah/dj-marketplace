@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, MapPin, DollarSign, Music } from "lucide-react";
+import { Star, MapPin, DollarSign, Music, Search } from "lucide-react";
 
 interface DJ {
   id: string;
@@ -94,7 +94,11 @@ export default function DJListing() {
   useEffect(() => {
     fetchDJs(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.search, filters.genre, filters.city, filters.minRate, filters.maxRate]);
+  }, []);
+
+  const handleSearch = () => {
+    fetchDJs(1);
+  };
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -115,7 +119,7 @@ export default function DJListing() {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Search
@@ -190,6 +194,16 @@ export default function DJListing() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={handleSearch}
+              disabled={loading}
+              className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Search className="w-4 h-4" />
+              {loading ? "Searching..." : "Search"}
+            </button>
           </div>
         </div>
 
