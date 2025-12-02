@@ -35,13 +35,14 @@ async function main() {
   });
 
   const adminUser = await prisma.user.upsert({
-    where: { email: "admin@example.com" },
+    where: { email: "mbende2000@yahoo.com" },
     update: {},
     create: {
-      email: "admin@example.com",
+      email: "mbende2000@yahoo.com",
       name: "Admin User",
       password: adminPassword,
       role: "ADMIN",
+      emailVerified: new Date(),
     },
   });
 
@@ -71,7 +72,7 @@ async function main() {
   console.log("Demo Credentials:");
   console.log("  - Email: demo@example.com | Password: demo123 (USER)");
   console.log("  - Email: dj@example.com | Password: dj123 (DJ)");
-  console.log("  - Email: admin@example.com | Password: azerty123456 (ADMIN)");
+  console.log("  - Email: mbende2000@yahoo.com | Password: Azerty123456 (ADMIN)");
 }
 
 main()
