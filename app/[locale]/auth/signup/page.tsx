@@ -101,8 +101,8 @@ export default function SignUpPage() {
         {success && (
           <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex gap-3">
             <div>
-              <p className="text-sm text-green-800 font-medium">Account created successfully!</p>
-              <p className="text-xs text-green-600 mt-1">Redirecting to sign in...</p>
+              <p className="text-sm text-green-800 font-medium">✓ Account created successfully!</p>
+              <p className="text-xs text-green-600 mt-1">Please check your email to verify your account. You&apos;ll be redirected to sign in shortly.</p>
             </div>
           </div>
         )}

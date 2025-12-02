@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { generateVerificationToken, generateExpirationDate } from "@/lib/token";
+import { sendVerificationEmail } from "@/lib/email";
 
 const prisma = new PrismaClient();
 
@@ -24,6 +26,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: "Invalid email format" },
+        { status: 400 }
+      );
+    }
+
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -39,25 +50,54 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user (not verified yet)
     const user = await prisma.user.create({
       data: {
         email,
         name,
         password: hashedPassword,
         role: role as "USER" | "DJ" | "ADMIN",
+        emailVerified: null, // Not verified until email is confirmed
       },
     });
 
+    // Generate verification token
+    const token = generateVerificationToken();
+    const expiresAt = generateExpirationDate(24); // 24 hours
+
+    // Store verification token
+    await prisma.emailVerificationToken.create({
+      data: {
+        email,
+        token,
+        expires: expiresAt,
+      },
+    });
+
+    // Send verification email
+    const baseUrl =
+      process.env.NEXTAUTH_URL ||
+      (request.headers.get("x-forwarded-proto") === "https"
+        ? "https"
+        : "http") +
+        "://" +
+        (request.headers.get("x-forwarded-host") || request.headers.get("host"));
+
+    const emailSent = await sendVerificationEmail(email, token, baseUrl);
+
     return NextResponse.json(
       {
-        message: "User registered successfully",
+        message: emailSent
+          ? "Registration successful! Please check your email to verify your account."
+          : "Registration successful! Email verification failed to send. Please contact support.",
         user: {
           id: user.id,
           email: user.email,
           name: user.name,
           role: user.role,
+          emailVerified: user.emailVerified,
         },
+        emailSent,
       },
       { status: 201 }
     );

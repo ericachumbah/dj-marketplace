@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, MapPin, DollarSign, Music, ArrowLeft, Mail, Phone, Globe, Instagram, Twitter } from "lucide-react";
+import { Star, MapPin, Music, ArrowLeft, Mail, Phone, Globe, Instagram, Twitter } from "lucide-react";
 
 interface DJProfile {
   id: string;
