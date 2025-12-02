@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface DJForVerification {
   id: string;
@@ -30,6 +32,8 @@ interface PaginationInfo {
 }
 
 export default function AdminDashboard() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [djs, setDjs] = useState<DJForVerification[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("PENDING");
@@ -60,9 +64,19 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
+    // Only allow access if authenticated and admin
+    if (status === "loading") return;
+    if (!session?.user) {
+      router.push("/auth/signin");
+      return;
+    }
+    if ((session.user as any).role !== "ADMIN") {
+      router.push("/auth/signin?error=forbidden");
+      return;
+    }
     fetchDJs(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStatus]);
+  }, [selectedStatus, session, status, router]);
 
   const handleVerifyDJ = async (djId: string, status: "VERIFIED" | "REJECTED") => {
     setSubmitting(true);
