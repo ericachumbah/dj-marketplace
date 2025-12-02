@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Music, Users, CheckCircle, Zap } from "lucide-react";
 import { getTranslations, type Locale } from "@/lib/i18n";
+import styles from "./page.module.css";
 
 export default async function Home({ 
   params 
@@ -30,14 +31,14 @@ export default async function Home({
 
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <Music className="w-20 h-20 mx-auto mb-6 drop-shadow-lg" />
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg">
+          <Music className={`w-20 h-20 mx-auto mb-6 drop-shadow-lg ${styles.fadeInDown}`} />
+          <h1 className={`text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg ${styles.fadeInUp}`}>
             {t.hero.title}
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100 drop-shadow-md">
+          <p className={`text-xl md:text-2xl mb-8 text-blue-100 drop-shadow-md ${styles.fadeInUp}`}>
             {t.hero.subtitle}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <div className={`flex flex-col sm:flex-row gap-4 justify-center mb-12 ${styles.fadeInUp}`}>
             <Link
               href={`/${locale}/dj/listing`}
               className="bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition shadow-lg"
@@ -54,10 +55,10 @@ export default async function Home({
         </div>
 
         {/* Floating decorative elements */}
-        <div className="absolute bottom-10 left-10 opacity-10">
+        <div className={`absolute bottom-10 left-10 opacity-10 ${styles.float}`}>
           <Music className="w-40 h-40 text-white" />
         </div>
-        <div className="absolute top-20 right-10 opacity-10">
+        <div className={`absolute top-20 right-10 opacity-10 ${styles.float}`}>
           <Music className="w-32 h-32 text-white" />
         </div>
       </div>
