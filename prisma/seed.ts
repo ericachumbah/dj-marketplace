@@ -9,7 +9,7 @@ async function main() {
   // Hash demo passwords
   const demoPassword = await bcrypt.hash("demo123", 10);
   const djPassword = await bcrypt.hash("dj123", 10);
-  const adminPassword = await bcrypt.hash("azerty123456", 10);
+  const adminPassword = await bcrypt.hash("Azerty123456", 10);
 
   // Create demo users with hashed passwords
   const user1 = await prisma.user.upsert({
@@ -36,7 +36,10 @@ async function main() {
 
   const adminUser = await prisma.user.upsert({
     where: { email: "mbende2000@yahoo.com" },
-    update: {},
+    update: {
+      password: adminPassword,
+      emailVerified: new Date(),
+    },
     create: {
       email: "mbende2000@yahoo.com",
       name: "Admin User",
