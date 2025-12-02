@@ -415,3 +415,4 @@ telnet smtp.gmail.com 587
 ---
 
 Last updated: November 2025
+# Trigger Vercel rebuild
