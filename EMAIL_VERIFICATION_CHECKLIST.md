@@ -4,7 +4,7 @@
 
 ### Database & Schema
 - [x] Database schema updated with `EmailVerificationToken` model
-- [x] Schema migration applied (`npx prisma db push` successful)
+- [x] Schema initialized (use seed script for MongoDB)
 - [x] `User.emailVerified` field available for email verification status
 - [x] Token model includes: email, token (unique), expires, createdAt
 
@@ -102,7 +102,7 @@ Before production deployment:
 - [ ] Generate new `NEXTAUTH_SECRET`: `openssl rand -base64 32`
 - [ ] Configure all email environment variables in Vercel
 - [ ] Set `NEXTAUTH_URL` to production domain
-- [ ] Run database migration: `npx prisma migrate deploy`
+- [ ] Run database seed in production: `npx ts-node --esm scripts/seed.ts`
 - [ ] Test on staging environment first
 - [ ] Monitor email delivery logs
 - [ ] Set up email bounce/failure alerts

@@ -11,9 +11,14 @@ const config: Config = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  transform: {
+    "^.+\\.(ts|tsx)$": "ts-jest",
+  },
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
+    "^uuid$": "<rootDir>/__mocks__/uuid.js",
   },
+  transformIgnorePatterns: ["node_modules/(?!uuid)"],
   testMatch: [
     "**/__tests__/**/*.[jt]s?(x)",
     "**/?(*.)+(spec|test).[jt]s?(x)",

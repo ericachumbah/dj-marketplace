@@ -5,16 +5,16 @@
     DATABASE_URL="postgresql://..." node scripts/upsert_admin.js --email=mbende2000@yahoo.com --password=Azerty123456
 
   This script upserts an admin user (creates or updates) with the provided email and password
-  and marks the email as verified. It uses the Prisma client and bcrypt to hash the password.
+  and marks the email as verified. It uses Mongoose and bcrypt to hash the password.
 */
 
-require('dotenv').config()
-const fs = require('fs')
-const path = require('path')
-const { PrismaClient } = require('@prisma/client')
-const bcrypt = require('bcryptjs')
-const argv = require('minimist')(process.argv.slice(2))
-const readline = require('readline')
+import 'dotenv/config.js'
+import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
+import minimist from 'minimist'
+import readline from 'readline'
+
+const argv = minimist(process.argv.slice(2))
 
 async function confirmPrompt(message) {
   const rl = readline.createInterface({
@@ -83,33 +83,55 @@ async function main() {
     return
   }
 
-  // Ensure DATABASE_URL in process.env matches dbUrl so Prisma uses it
-  if (dbUrl) process.env.DATABASE_URL = dbUrl
+  // Use Mongoose to upsert admin
+  const mongoUrl = dbUrl || process.env.MONGODB_URI || process.env.DATABASE_URL
+  if (!mongoUrl) {
+    console.error('Error: No MongoDB URL provided via --url or MONGODB_URI env')
+    process.exit(1)
+  }
 
-  const prisma = new PrismaClient()
   try {
-    const user = await prisma.user.upsert({
-      where: { email },
-      update: {
-        password: hashed,
-        emailVerified: new Date(),
-        role: 'ADMIN',
-      },
-      create: {
+    // Connect to MongoDB
+    await mongoose.connect(mongoUrl, {})
+
+    // Upsert directly into the users collection to avoid requiring TS model files
+    const { default: cuid } = await import('cuid')
+    const usersColl = mongoose.connection.collection('users')
+
+    const now = new Date()
+    const update = {
+      $set: {
         email,
         name: 'Admin User',
         password: hashed,
         role: 'ADMIN',
-        emailVerified: new Date(),
+        emailVerified: now,
+        updatedAt: now,
       },
-    })
+      $setOnInsert: {
+        id: cuid(),
+        createdAt: now,
+      },
+    }
 
-    console.log('Upserted admin user:', user.email)
+    const res = await usersColl.findOneAndUpdate({ email }, update, {
+      upsert: true,
+      returnDocument: 'after',
+    })
+    const doc = res.value || null
+    console.log('Upserted admin user:', doc ? doc.email : email)
   } catch (err) {
-    console.error('Error upserting admin:', err.message || err)
+    console.error(
+      'Error upserting admin with Mongoose:',
+      err && err.message ? err.message : err
+    )
     process.exitCode = 1
   } finally {
-    await prisma.$disconnect()
+    try {
+      await mongoose.connection.close()
+    } catch {
+      // ignore
+    }
   }
 }
 

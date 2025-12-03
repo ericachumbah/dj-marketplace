@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { generateVerificationToken, generateExpirationDate } from "@/lib/token";
 import { sendVerificationEmail } from "@/lib/email";
-
-const prisma = new PrismaClient();
+import { connectToDatabase } from "@/lib/mongoose";
+import User from "@/models/User";
+import EmailVerificationToken from "@/models/EmailVerificationToken";
 
 export async function POST(request: NextRequest) {
+  await connectToDatabase();
   try {
     const body = await request.json();
     const { email, password, name, role = "USER" } = body;
@@ -36,9 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await User.findOne({ email }).lean();
 
     if (existingUser) {
       return NextResponse.json(
@@ -51,27 +50,24 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user (not verified yet)
-    const user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        password: hashedPassword,
-        role: role as "USER" | "DJ" | "ADMIN",
-        emailVerified: null, // Not verified until email is confirmed
-      },
+    const userDoc = new User({
+      email,
+      name,
+      password: hashedPassword,
+      role: role as "USER" | "DJ" | "ADMIN",
+      emailVerified: null,
     });
+    const user = await userDoc.save();
 
     // Generate verification token
     const token = generateVerificationToken();
     const expiresAt = generateExpirationDate(24); // 24 hours
 
     // Store verification token
-    await prisma.emailVerificationToken.create({
-      data: {
-        email,
-        token,
-        expires: expiresAt,
-      },
+    await EmailVerificationToken.create({
+      email,
+      token,
+      expires: expiresAt,
     });
 
     // Send verification email

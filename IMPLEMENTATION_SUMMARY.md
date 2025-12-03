@@ -92,12 +92,12 @@ A production-ready Progressive Web App (PWA) for DJ marketplace has been success
 ### ✅ Technical Implementation
 
 #### Architecture
-- **Next.js 15** - Latest React framework
+- **Next.js 16** - Latest React framework
 - **React 19** - Latest React version
 - **TypeScript** - Full type safety
 - **TailwindCSS** - Utility-first CSS
-- **Prisma ORM** - Database management
-- **PostgreSQL** - Relational database
+- **Mongoose (MongoDB ODM)** - Database management
+- **MongoDB** - Document database
 - **NextAuth v5** - Authentication
 - **AWS SDK** - S3 integration
 - **Jest** - Unit testing
@@ -136,7 +136,7 @@ A production-ready Progressive Web App (PWA) for DJ marketplace has been success
 #### Deployment Ready
 - **Dockerfile** - Multi-stage production build
 - **docker-compose.yml** - Local development stack
-  - PostgreSQL container
+   - (Optional) MongoDB or MongoDB Atlas
   - MinIO S3-compatible container
   - Health checks
   - Volume persistence
@@ -188,12 +188,10 @@ dj-marketplace/
 │   ├── layout.tsx                   # Root layout
 │   └── globals.css                  # Global styles
 ├── lib/
-│   ├── prisma.ts                    # Prisma client singleton
+│   ├── mongoose.ts                  # Mongoose connection helper
 │   ├── storage.ts                   # S3 storage service
 │   └── utils/                       # Utilities
-├── prisma/
-│   ├── schema.prisma                # Database schema
-│   └── seed.ts                      # Seed script
+<!-- prisma/ removed: legacy Prisma schema and seed removed during migration; use Mongoose models in `models/` -->
 ├── public/
 │   ├── manifest.json                # PWA manifest
 │   ├── sw.js                        # Service worker
@@ -222,15 +220,15 @@ dj-marketplace/
 # 1. Install dependencies
 npm install
 
-# 2. Setup database (with docker-compose)
-docker-compose up -d
+# 2. Setup development services (optional)
+docker-compose up -d minio
 
 # 3. Configure environment
 cp .env.example .env.local
-# Edit .env.local with your settings
+# Edit .env.local with your settings (set MONGODB_URI)
 
-# 4. Run migrations
-npx prisma migrate dev
+# 4. Seed the database
+npx ts-node --esm scripts/seed.ts
 
 # 5. Start development server
 npm run dev
@@ -247,22 +245,11 @@ npm run dev
 ## 🔐 Security Features
 
 ✅ **Authentication**
-- NextAuth for secure session management
-- JWT tokens with expiration
-- Email verification
-- OAuth provider validation
 
 ✅ **Authorization**
-- Role-based access control (USER, DJ, ADMIN)
-- Protected API routes
-- Admin-only dashboard access
 
 ✅ **Data Protection**
-- Environment variables for secrets
-- Prisma prevents SQL injection
-- CORS configuration ready
-- File upload validation
-- File size limits
+ - Mongoose (use parameterized queries and validation to prevent injection)
 
 ✅ **Storage**
 - S3-compatible secure storage
@@ -308,11 +295,8 @@ All with step-by-step instructions in DEPLOYMENT.md
 
 ## 📊 Database Support
 
-- PostgreSQL (primary)
-- MySQL (with adapter change)
-- MariaDB (with adapter change)
-- SQLite (for development)
-- Any Prisma-supported database
+- MongoDB (primary via Mongoose)
+   (If you need a SQL variant, we can provide a migration plan.)
 
 ## 🔄 API Documentation
 
@@ -328,7 +312,7 @@ Every API endpoint is documented with:
 Easy to customize:
 - Colors: `tailwind.config.ts`
 - Fonts: Next.js font optimization
-- Database: `prisma/schema.prisma`
+ - Database: Mongoose models in `models/` (e.g. `models/User.ts`)
 - API rates: Rate limiting middleware ready
 - Email templates: Send through NextAuth
 - Authentication: Add more OAuth providers
@@ -338,7 +322,7 @@ Easy to customize:
 All necessary packages pre-installed:
 - Next.js & React
 - TailwindCSS
-- Prisma & PostgreSQL driver
+ - Mongoose & MongoDB driver
 - NextAuth with adapters
 - AWS SDK for S3
 - bcryptjs for password hashing
@@ -363,7 +347,7 @@ After deployment:
    - Configure access keys
 
 4. **Database Backup**
-   - Setup automated PostgreSQL backups
+   - Setup automated MongoDB backups (mongodump/Atlas backups)
    - Configure S3 file backup
 
 5. **Monitoring**

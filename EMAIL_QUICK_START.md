@@ -27,8 +27,8 @@ NEXTAUTH_URL=http://localhost:3000               # Update for production!
 
 ### 3. Verify Database
 ```bash
-npx prisma db push
-# Should output: "Your database is now in sync with your Prisma schema"
+# Ensure `MONGODB_URI` is set and run the seed (if needed):
+npx ts-node --esm scripts/seed.ts
 ```
 
 ## 📝 User Registration Flow

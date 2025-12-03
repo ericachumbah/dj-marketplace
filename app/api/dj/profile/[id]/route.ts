@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { connectToDatabase } from "@/lib/mongoose";
+import DJProfile from "@/models/DJProfile";
 
 export async function GET(
   req: NextRequest,
@@ -8,19 +9,8 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const djProfile = await prisma.dJProfile.findUnique({
-      where: { id },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-          },
-        },
-      },
-    });
+    await connectToDatabase();
+    const djProfile = await DJProfile.findOne({ id }).populate({ path: "userId", select: "id name email image" }).lean();
 
     if (!djProfile) {
       return NextResponse.json(

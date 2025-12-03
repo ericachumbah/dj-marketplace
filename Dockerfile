@@ -7,9 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Generate Prisma client
-COPY prisma ./prisma
-RUN npx prisma generate
+# No Prisma client generation required — using Mongoose
 
 # Copy source code
 COPY . .
@@ -26,8 +24,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 
-# Copy Prisma schema and migrations
-COPY prisma ./prisma
+# (prisma folder removed) no Prisma client generation required — using Mongoose
 
 # Copy built app from builder stage
 COPY --from=builder /app/.next ./.next

@@ -29,7 +29,7 @@ vercel
 4. Database will be connected to your PostgreSQL instance
 
 **Environment Variables for Vercel:**
-- `DATABASE_URL` - PostgreSQL connection string
+- `MONGODB_URI` - MongoDB connection string (Atlas or self-hosted)
 - `NEXTAUTH_SECRET` - Generate with: `openssl rand -base64 32`
 - `NEXTAUTH_URL` - Your production domain
 - `S3_ENDPOINT` - S3 or MinIO endpoint
@@ -47,7 +47,7 @@ docker build -t dj-marketplace:latest .
 **Run container:**
 ```bash
 docker run -p 3000:3000 \
-  -e DATABASE_URL="postgresql://..." \
+  -e MONGODB_URI="mongodb+srv://..." \
   -e NEXTAUTH_SECRET="..." \
   -e S3_ENDPOINT="..." \
   dj-marketplace:latest
@@ -62,7 +62,7 @@ docker-compose up -d
 
 **Prerequisites:**
 - Node.js 18+
-- PostgreSQL
+- MongoDB (local or Atlas)
 - Nginx or Apache (reverse proxy)
 - PM2 or systemd for process management
 
@@ -90,9 +90,10 @@ cp .env.example .env.production
 npm run build
 ```
 
-5. Database migration
+5. Database seed (MongoDB)
 ```bash
-npx prisma migrate deploy
+# Ensure MONGODB_URI is set
+npx ts-node --esm scripts/seed.ts
 ```
 
 6. Start with PM2
@@ -181,45 +182,32 @@ export NEXTAUTH_SECRET="$(openssl rand -base64 32)"
 
 ## Database Setup
 
-### PostgreSQL Installation
+This project now uses MongoDB (via Mongoose). For development you can use a local MongoDB instance or MongoDB Atlas for production.
 
 **Local (Development):**
 ```bash
-# macOS with Homebrew
-brew install postgresql
-brew services start postgresql
-
-# Linux (Ubuntu)
-sudo apt install postgresql postgresql-contrib
-sudo systemctl start postgresql
+# macOS with Homebrew (MongoDB Community)
+brew tap mongodb/brew
+brew install mongodb-community@6.0
+brew services start mongodb-community@6.0
 ```
 
-**Create database:**
-```bash
-createdb djmarketplace
-psql djmarketplace < schema.sql
-```
+**Create / Configure database:**
+Create a database and set the connection string in your environment as `MONGODB_URI`.
 
 **Remote (Production):**
-Use managed services:
-- AWS RDS
-- DigitalOcean Managed Database
-- Heroku Postgres
-- Neon
-- Supabase
+Use managed services such as MongoDB Atlas and set `MONGODB_URI` in your deployment environment.
 
-### Run Migrations
+### Seed the database
+
+This project uses a seed script that runs using `ts-node`. To seed your MongoDB database run:
 
 ```bash
-# Initial migration
-npx prisma migrate dev --name init
-
-# Deploy migrations
-npx prisma migrate deploy
-
-# Check database
-npx prisma studio
+# Ensure MONGODB_URI is set, then:
+npx ts-node --esm scripts/seed.ts
 ```
+
+There are no Prisma migrations for MongoDB; the seed script and Mongoose models initialise the collections as needed.
 
 ## Storage Setup
 
@@ -289,16 +277,13 @@ docker logs container-id
 
 ## Backup & Restore
 
-### PostgreSQL Backup
+### MongoDB Backup
 ```bash
-# Full backup
-pg_dump djmarketplace > backup.sql
-
-# Compressed backup
-pg_dump djmarketplace | gzip > backup.sql.gz
+# Full backup using mongodump
+mongodump --uri="$MONGODB_URI" --archive=backup.archive
 
 # Restore
-psql djmarketplace < backup.sql
+mongorestore --uri="$MONGODB_URI" --archive=backup.archive --drop
 ```
 
 ### S3 Backup
@@ -339,12 +324,10 @@ sudo systemctl enable certbot.timer
 - **Bunny CDN** - Developer-friendly CDN
 
 ### Database Optimization
-```bash
-# Index frequently searched columns
-npx prisma db execute --stdin < optimize.sql
-
-# Analyze query performance
-EXPLAIN ANALYZE SELECT ...;
+Use MongoDB tools and indexes for optimization. Example:
+```javascript
+// Create an index in Mongo shell or via Mongoose
+db.users.createIndex({ email: 1 })
 ```
 
 ### Caching

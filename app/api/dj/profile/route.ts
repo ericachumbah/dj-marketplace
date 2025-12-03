@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { prisma } from "@/lib/prisma";
+import { connectToDatabase } from "@/lib/mongoose";
+import User from "@/models/User";
+import DJProfile from "@/models/DJProfile";
 
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+
+    await connectToDatabase();
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -35,25 +39,19 @@ export async function POST(req: NextRequest) {
     } = body;
 
     // Get or create user
-    let user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
+    let user = await User.findOne({ email: session.user.email }).lean();
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email: session.user.email,
-          name: session.user.name || undefined,
-          image: session.user.image || undefined,
-          role: "DJ",
-        },
+      const created = await User.create({
+        email: session.user.email,
+        name: session.user.name || undefined,
+        image: session.user.image || undefined,
+        role: "DJ",
       });
+      user = created.toObject();
     }
 
     // Check if DJ profile already exists
-    const existingProfile = await prisma.dJProfile.findUnique({
-      where: { userId: user.id },
-    });
+    const existingProfile = await DJProfile.findOne({ userId: user.id }).lean();
 
     if (existingProfile) {
       return NextResponse.json(
@@ -63,26 +61,24 @@ export async function POST(req: NextRequest) {
     }
 
     // Create DJ profile
-    const djProfile = await prisma.dJProfile.create({
-      data: {
-        userId: user.id,
-        bio,
-        genres: genres || [],
-        hourlyRate: parseFloat(hourlyRate),
-        experience: parseInt(experience),
-        instagram,
-        twitter,
-        website,
-        phone,
-        city,
-        state,
-        zipCode,
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
-        radius: radius ? parseInt(radius) : null,
-        profileImage,
-        credentials: credentials || [],
-      },
+    const djProfile = await DJProfile.create({
+      userId: user.id,
+      bio,
+      genres: genres || [],
+      hourlyRate: parseFloat(hourlyRate),
+      experience: parseInt(experience),
+      instagram,
+      twitter,
+      website,
+      phone,
+      city,
+      state,
+      zipCode,
+      latitude: latitude ? parseFloat(latitude) : null,
+      longitude: longitude ? parseFloat(longitude) : null,
+      radius: radius ? parseInt(radius) : null,
+      profileImage,
+      credentials: credentials || [],
     });
 
     return NextResponse.json(djProfile, { status: 201 });
@@ -100,33 +96,24 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
+    await connectToDatabase();
+
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       );
     }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
+    const user = await User.findOne({ email: session.user.email }).lean();
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const djProfile = await prisma.dJProfile.findUnique({
-      where: { userId: user.id },
-    });
+    const djProfile = await DJProfile.findOne({ userId: user.id }).lean();
 
     if (!djProfile) {
-      return NextResponse.json(
-        { error: "DJ profile not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "DJ profile not found" }, { status: 404 });
     }
 
     return NextResponse.json(djProfile);
@@ -143,23 +130,17 @@ export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
+    await connectToDatabase();
+
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       );
     }
+    const user = await User.findOne({ email: session.user.email }).lean();
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
-    }
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     const body = await req.json();
 
@@ -211,10 +192,7 @@ export async function PUT(req: NextRequest) {
       updateData.genres = body.genres || [];
     }
 
-    const djProfile = await prisma.dJProfile.update({
-      where: { userId: user.id },
-      data: updateData,
-    });
+    const djProfile = await DJProfile.findOneAndUpdate({ userId: user.id }, updateData, { new: true });
 
     return NextResponse.json(djProfile);
   } catch (error) {

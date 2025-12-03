@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { connectToDatabase } from '@/lib/mongoose';
+import User from '@/models/User';
 
 /**
  * Secure debug endpoint to check for an admin user in the database.
@@ -33,10 +34,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+
     // Default email to check if not provided
     const emailToCheck = emailParam || 'mbende2000@yahoo.com';
 
-    const user = await prisma.user.findUnique({ where: { email: emailToCheck } });
+    await connectToDatabase();
+    const user = await User.findOne({ email: emailToCheck }).lean();
 
     if (!user) {
       return NextResponse.json({ exists: false });

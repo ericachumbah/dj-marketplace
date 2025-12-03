@@ -10,14 +10,12 @@ npm install
 
 ### Step 2: Database & Storage (2 min)
 ```bash
-# Start PostgreSQL & MinIO
-docker-compose up -d
+# Start MinIO for storage (if using docker-compose)
+docker-compose up -d minio
 
-# Run database migrations
-npx prisma migrate dev --name init
-
+# Ensure you have a MongoDB instance and set MONGODB_URI
 # Seed sample data (optional)
-npx prisma db seed
+npx ts-node --esm scripts/seed.ts
 ```
 
 ### Step 3: Start Development (1 min)
@@ -48,11 +46,11 @@ After seeding:
 ## 📦 What's Pre-configured
 
 ✅ Next.js 15 with TypeScript
-✅ PostgreSQL database (via docker-compose)
+✅ MongoDB (via local install or MongoDB Atlas)
 ✅ MinIO S3 storage (via docker-compose)
 ✅ TailwindCSS styling
 ✅ NextAuth authentication
-✅ Prisma ORM
+✅ Mongoose (MongoDB ODM)
 ✅ Jest testing setup
 ✅ ESLint & TypeScript checking
 ✅ PWA service worker

@@ -1,6 +1,6 @@
 # DJ Marketplace - Modern PWA
 
-A modern, fully-featured Progressive Web App (PWA) for connecting DJs with event organizers. Built with Next.js, React, TailwindCSS, PostgreSQL, and NextAuth.
+A modern, fully-featured Progressive Web App (PWA) for connecting DJs with event organizers. Built with Next.js, React, TailwindCSS, MongoDB (Mongoose), and NextAuth.
 
 ## Features
 
@@ -16,7 +16,7 @@ A modern, fully-featured Progressive Web App (PWA) for connecting DJs with event
 ### Technical Features
 - Type-safe with TypeScript
 - API routes with authentication
-- Database ORM with Prisma
+	- Database ORM with Mongoose
 - Responsive design with TailwindCSS
 - Automated tests with Jest
 - Production-ready deployment
@@ -25,7 +25,7 @@ A modern, fully-featured Progressive Web App (PWA) for connecting DJs with event
 
 - **Frontend**: Next.js 15, React 19, TailwindCSS
 - **Backend**: Next.js API Routes, Node.js
-- **Database**: PostgreSQL with Prisma ORM
+- **Database**: MongoDB with Mongoose
 - **Authentication**: NextAuth v5
 - **Storage**: S3-compatible (MinIO, AWS S3)
 - **Testing**: Jest, React Testing Library
@@ -36,7 +36,7 @@ A modern, fully-featured Progressive Web App (PWA) for connecting DJs with event
 
 ### Prerequisites
 - Node.js 18+
-- PostgreSQL database
+- MongoDB (local or Atlas)
 - S3-compatible storage (MinIO for development)
 
 ### Installation
@@ -52,9 +52,10 @@ cp .env.example .env.local
 # Edit .env.local with your configuration
 ```
 
-3. **Setup database**
+3. **Setup database / seed**
 ```bash
-npx prisma migrate dev --name init
+# Ensure MONGODB_URI is set, then seed sample data:
+npx ts-node --esm scripts/seed.ts
 ```
 
 4. **Start development server**
@@ -81,19 +82,19 @@ dj-marketplace/
 ├── app/
 │   ├── api/              # API routes
 │   ├── components/       # React components
-│   ├── dj/              # DJ pages
-│   ├── admin/           # Admin pages
-│   ├── auth/            # Auth pages
-│   └── page.tsx         # Home page
+│   ├── dj/               # DJ pages
+│   ├── admin/            # Admin pages
+│   ├── auth/             # Auth pages
+│   └── page.tsx          # Home page
 ├── lib/
-│   ├── prisma.ts        # Prisma client
+│   ├── mongoose.ts      # Mongoose connection helper
 │   ├── storage.ts       # S3 service
 │   └── utils/           # Utilities
-├── prisma/
-│   └── schema.prisma    # Database schema
+├── models/              # Mongoose models
+<!-- prisma folder removed: schema and seed moved to scripts/ or preserved in repository history -->
 ├── public/
 │   ├── manifest.json    # PWA manifest
-│   └── sw.js           # Service worker
+│   └── sw.js            # Service worker
 ├── __tests__/           # Test files
 └── package.json         # Dependencies
 ```
@@ -146,7 +147,7 @@ vercel
 ```
 
 ### Environment Variables for Production
-- `DATABASE_URL` - PostgreSQL connection
+- `MONGODB_URI` - MongoDB connection string (Atlas or self-hosted)
 - `NEXTAUTH_SECRET` - Secure random string
 - `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` - S3/MinIO
 - `EMAIL_SERVER_*` - SMTP configuration
@@ -157,7 +158,7 @@ vercel
 ✅ Secure authentication with NextAuth
 ✅ Password hashing with bcrypt
 ✅ Environment variables for secrets
-✅ SQL injection protection via Prisma
+✅ Use parameterized queries and validation with Mongoose to reduce injection risk
 ✅ CSRF protection
 ✅ Rate limiting ready
 

@@ -7,42 +7,42 @@ echo "🚀 Mix Factory Database Migration"
 echo "=================================="
 echo ""
 
-# Check if DATABASE_URL is provided
-if [ -z "$DATABASE_URL" ]; then
-    echo "❌ Error: DATABASE_URL environment variable not set"
+## Simple MongoDB seed helper script
+
+# Check if MONGODB_URI is provided
+if [ -z "$MONGODB_URI" ]; then
+    echo "❌ Error: MONGODB_URI environment variable not set"
     echo ""
-    echo "Please set your Supabase connection string:"
-    echo "  export DATABASE_URL='postgresql://postgres:YOUR_PASSWORD@YOUR_HOST:5432/postgres'"
+    echo "Please set your MongoDB connection string:" 
+    echo "  export MONGODB_URI='mongodb+srv://user:pass@cluster0.mongodb.net/dbname?retryWrites=true&w=majority'"
     echo ""
     exit 1
 fi
 
-echo "✓ DATABASE_URL found"
+echo "✓ MONGODB_URI found"
 echo ""
 
-# Check if Prisma is installed
+echo "📦 Seeding MongoDB (ts-node seed)..."
+echo ""
+
 if ! command -v npx &> /dev/null; then
     echo "❌ Error: npx not found. Please install Node.js"
     exit 1
 fi
 
-echo "📊 Running Prisma migrations..."
-echo ""
-
-# Run Prisma db push
-npx prisma db push
+# Run the TypeScript seed script using ts-node
+npx ts-node --esm scripts/seed.ts
 
 if [ $? -eq 0 ]; then
     echo ""
-    echo "✅ Database schema pushed successfully!"
+    echo "✅ Database seeded successfully!"
     echo ""
     echo "Next steps:"
-    echo "1. Update .env.production with your DATABASE_URL"
-    echo "2. Deploy to Vercel: https://vercel.com/new"
-    echo "3. Add DATABASE_URL to Vercel environment variables"
+    echo "1. Update production environment variables with MONGODB_URI"
+    echo "2. Deploy to Vercel or your host"
     echo ""
 else
     echo ""
-    echo "❌ Migration failed. Check your DATABASE_URL"
+    echo "❌ Seeding failed. Check your MONGODB_URI and seed script"
     exit 1
 fi

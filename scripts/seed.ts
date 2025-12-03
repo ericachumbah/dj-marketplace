@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
-import { connectToDatabase } from "@/lib/mongoose";
-import User from "@/models/User";
-import DJProfile from "@/models/DJProfile";
+import { connectToDatabase } from "../lib/mongoose";
+import User from "../models/User";
+import DJProfile from "../models/DJProfile";
 
 async function main() {
   console.log("Seeding database (MongoDB)...");
@@ -41,8 +41,45 @@ async function main() {
 
   // Create sample DJ profile for DJ user
   if (djUser && djUser.id) {
-    /*
-      prisma/seed.ts (legacy) — the project now uses `scripts/seed.ts` and `scripts/seed.js` for seeding MongoDB.
-      This file was retained for historical reference but is no longer used by the application.
-    */
+    await DJProfile.findOneAndUpdate(
+      { userId: djUser.id },
+      {
+        userId: djUser.id,
         bio: "Professional DJ with 10 years of experience",
+        genres: ["House", "Techno", "Deep House"],
+        hourlyRate: 150,
+        experience: 10,
+        status: "VERIFIED",
+        verifiedAt: new Date(),
+        profileImage: "https://via.placeholder.com/400",
+        city: "New York",
+        state: "NY",
+        zipCode: "10001",
+        phone: "+1-555-0100",
+        instagram: "@djprofessional",
+        website: "https://djprofessional.com",
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+  }
+
+  console.log("✅ Database seeded successfully!");
+  console.log("Demo Credentials:");
+  console.log("  - Email: demo@example.com | Password: demo123 (USER)");
+  console.log("  - Email: dj@example.com | Password: dj123 (DJ)");
+  console.log("  - Email: mbende2000@yahoo.com | Password: Azerty123456 (ADMIN)");
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    try {
+      const mongoose = (await import("mongoose")).default;
+      await mongoose.connection.close();
+    } catch (e) {
+      // ignore
+    }
+  });

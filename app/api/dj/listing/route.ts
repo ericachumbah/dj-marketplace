@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { connectToDatabase } from "@/lib/mongoose";
+import DJProfile from "@/models/DJProfile";
+
+// GET /api/dj/listing
+// Returns paginated DJ profiles with populated user info
 
 export async function GET(req: NextRequest) {
   try {
@@ -14,79 +18,46 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    // Build filter
-    const where: Record<string, unknown> = {
-      // Show all DJs regardless of verification status (or only VERIFIED if you want strict verification)
-      // Removing status filter to show PENDING DJs as well
-    };
+    await connectToDatabase();
 
-    if (genre) {
-      where.genres = { has: genre };
-    }
+    const query: any = {};
 
-    if (city) {
-      where.city = {
-        contains: city,
-        mode: "insensitive",
-      };
-    }
-
+    if (genre) query.genres = genre;
+    if (city) query.city = { $regex: city, $options: "i" };
     if (minRate || maxRate) {
-      const rateFilter: Record<string, number> = {};
-      if (minRate) {
-        rateFilter.gte = parseFloat(minRate);
-      }
-      if (maxRate) {
-        rateFilter.lte = parseFloat(maxRate);
-      }
-      where.hourlyRate = rateFilter;
+      query.hourlyRate = {};
+      if (minRate) query.hourlyRate.$gte = parseFloat(minRate);
+      if (maxRate) query.hourlyRate.$lte = parseFloat(maxRate);
     }
-
     if (search) {
-      where.OR = [
-        {
-          user: {
-            name: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
-        },
-        {
-          bio: {
-            contains: search,
-            mode: "insensitive",
-          },
-        },
-      ];
+      const r = new RegExp(search, "i");
+      query.$or = [{ bio: r }, { /* user.name will be filtered after populate */ }];
     }
 
-    // Get total count
-    const total = await prisma.dJProfile.count({ where });
+    const total = await DJProfile.countDocuments(query);
 
-    // Get DJ profiles
-    const djs = await prisma.dJProfile.findMany({
-      where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-          },
-        },
-      },
-      orderBy: { rating: "desc" },
-      skip,
-      take: limit,
-    });
+    const djs = await DJProfile.find(query)
+      .populate({ path: "userId", select: "id name email image" })
+      .sort({ rating: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
-    // Map to response format
-    const djsWithStats = (djs || []).map((dj) => ({
+    // If search also targets user.name, filter the populated results
+    let filtered = djs;
+    if (search) {
+      const r = new RegExp(search, "i");
+      filtered = djs.filter((dj: any) => {
+        const user = (dj as any).userId as any;
+        return r.test(dj.bio || "") || (user && r.test(user.name || ""));
+      });
+    }
+
+    const djsWithStats = (filtered || []).map((dj: any) => ({
       ...dj,
       totalReviews: 0,
       totalBookings: 0,
+      user: (dj as any).userId || null,
     }));
 
     return NextResponse.json(

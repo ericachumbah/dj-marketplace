@@ -10,9 +10,9 @@ The email verification system ensures that users provide valid email addresses d
 
 ### Components
 
-1. **Prisma Schema** (`prisma/schema.prisma`)
-   - `User` model: Added `emailVerified` DateTime field (nullable)
-   - `EmailVerificationToken` model: Stores verification tokens with expiration
+1. **Legacy Prisma Schema (removed; for reference only)**
+   - The original Prisma schema used with the previous Postgres setup is no longer part of this repository.
+   - The application now uses Mongoose models located in `models/` to represent `User` and `EmailVerificationToken`.
 
 2. **Email Service** (`lib/email.ts`)
    - `sendVerificationEmail()`: Sends email with verification link
@@ -221,16 +221,19 @@ Before deploying to Vercel:
    - Set `NEXTAUTH_URL` to your production domain
    - Generate new `NEXTAUTH_SECRET` using: `openssl rand -base64 32`
 
-2. **Database Migration:**
-   ```bash
-   npx prisma migrate deploy
-   ```
+2. **Database/Seed:**
+Ensure `MONGODB_URI` is set in production and run the seed script once to populate required data (or run locally against production DB with care):
+
+```bash
+# Ensure MONGODB_URI is set
+npx ts-node --esm scripts/seed.ts
+```
 
 3. **Test verification flow:**
-   - Register test account on production
-   - Verify you receive email
-   - Confirm email verification works
-   - Confirm unverified users cannot signin
+- Register test account on production
+- Verify you receive email
+- Confirm email verification works
+- Confirm unverified users cannot signin
 
 4. **Monitor emails:**
    - Check email delivery logs

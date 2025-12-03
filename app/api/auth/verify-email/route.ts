@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { connectToDatabase } from "@/lib/mongoose";
+import EmailVerificationToken from "@/models/EmailVerificationToken";
+import User from "@/models/User";
 
 export async function GET(request: NextRequest) {
+  await connectToDatabase();
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");
@@ -14,9 +17,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Find the verification token
-    const verificationToken = await prisma.emailVerificationToken.findUnique({
-      where: { token },
-    });
+    const verificationToken = await EmailVerificationToken.findOne({ token }).lean();
 
     if (!verificationToken) {
       return NextResponse.json(
@@ -28,9 +29,7 @@ export async function GET(request: NextRequest) {
     // Check if token has expired
     if (new Date() > verificationToken.expires) {
       // Delete expired token
-      await prisma.emailVerificationToken.delete({
-        where: { token },
-      });
+      await EmailVerificationToken.deleteOne({ token });
 
       return NextResponse.json(
         { error: "Verification link has expired. Please register again." },
@@ -39,9 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: { email: verificationToken.email },
-    });
+    const user = await User.findOne({ email: verificationToken.email }).lean();
 
     if (!user) {
       return NextResponse.json(
@@ -51,17 +48,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Update user as verified
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        emailVerified: new Date(),
-      },
-    });
+    await User.findOneAndUpdate({ id: user.id }, { emailVerified: new Date() });
 
     // Delete the verification token
-    await prisma.emailVerificationToken.delete({
-      where: { token },
-    });
+    await EmailVerificationToken.deleteOne({ token });
 
     // Redirect to success page or signin
     return NextResponse.redirect(
