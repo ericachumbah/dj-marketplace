@@ -1,48 +1,14 @@
-import bcrypt from "bcryptjs";
-import { connectToDatabase } from "@/lib/mongoose";
-import User from "@/models/User";
-import DJProfile from "@/models/DJProfile";
+/*
+  DEPRECATED: prisma/seed.ts is no longer used.
+  
+  This project has been migrated to MongoDB/Mongoose.
+  Use the modern seed scripts instead:
+  
+  - npx ts-node --esm scripts/seed.ts  (TypeScript)
+  - node scripts/seed.js               (JavaScript)
+  
+  This file is kept for reference only.
+*/
 
-async function main() {
-  console.log("Seeding database (MongoDB)...");
-  await connectToDatabase();
-
-  // Hash demo passwords
-  const demoPassword = await bcrypt.hash("demo123", 10);
-  const djPassword = await bcrypt.hash("dj123", 10);
-  const adminPassword = await bcrypt.hash("Azerty123456", 10);
-
-  // Upsert demo user
-  const user1 = await User.findOneAndUpdate(
-    { email: "demo@example.com" },
-    { email: "demo@example.com", name: "Demo User", password: demoPassword, role: "USER" },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
-
-  // Upsert DJ user
-  const djUser = await User.findOneAndUpdate(
-    { email: "dj@example.com" },
-    { email: "dj@example.com", name: "Demo DJ", password: djPassword, role: "DJ" },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
-
-  // Upsert Admin user
-  const adminUser = await User.findOneAndUpdate(
-    { email: "mbende2000@yahoo.com" },
-    {
-      email: "mbende2000@yahoo.com",
-      name: "Admin User",
-      password: adminPassword,
-      role: "ADMIN",
-      emailVerified: new Date(),
-    },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
-
-  // Create sample DJ profile for DJ user
-  if (djUser && djUser.id) {
-    /*
-      prisma/seed.ts (legacy) — the project now uses `scripts/seed.ts` and `scripts/seed.js` for seeding MongoDB.
-      This file was retained for historical reference but is no longer used by the application.
-    */
-        bio: "Professional DJ with 10 years of experience",
+console.warn("⚠️  prisma/seed.ts is deprecated. Use scripts/seed.ts or scripts/seed.js instead");
+process.exit(0);

@@ -1,17 +1,21 @@
 #!/usr/bin/env node
-require('dotenv').config()
+require('dotenv').config({ path: '.env.local' })
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const cuid = require('cuid')
 
 async function main() {
-  const mongoUrl = process.env.MONGODB_URI || process.env.DATABASE_URL
+  let mongoUrl = process.env.MONGODB_URI || process.env.DATABASE_URL
   if (!mongoUrl) {
     console.error('MONGODB_URI not set. Set it in environment and retry.')
     process.exit(1)
   }
 
+  // Remove quotes if present (dotenv sometimes includes them)
+  mongoUrl = mongoUrl.replace(/^["']|["']$/g, '')
+
   console.log('Connecting to MongoDB...')
+  console.log('Connection string length:', mongoUrl.length)
   await mongoose.connect(mongoUrl, {})
 
   const usersColl = mongoose.connection.collection('users')
