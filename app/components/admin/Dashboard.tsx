@@ -188,7 +188,7 @@ export default function AdminDashboard() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium">
-                        ${dj.hourlyRate}/hr
+                        €{dj.hourlyRate}/hr
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {new Date(dj.createdAt).toLocaleDateString()}

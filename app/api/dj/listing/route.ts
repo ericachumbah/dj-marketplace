@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
 import DJProfile from "@/models/DJProfile";
+import mongoose from "mongoose";
 
 // GET /api/dj/listing
 // Returns paginated DJ profiles with populated user info
@@ -31,23 +32,47 @@ export async function GET(req: NextRequest) {
     }
     if (search) {
       const r = new RegExp(search, "i");
-      query.$or = [{ bio: r }, { /* user.name will be filtered after populate */ }];
+      query.$or = [{ bio: r }, { /* user.name will be filtered after lookup */ }];
     }
 
     const total = await DJProfile.countDocuments(query);
 
     const djs = await DJProfile.find(query)
-      .populate({ path: "userId", select: "id name email image" })
       .sort({ rating: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
 
-    // If search also targets user.name, filter the populated results
-    let filtered = djs;
+    // Manually fetch user data since we use custom string IDs (cuid), not MongoDB ObjectIds
+    const djsWithUsers = await Promise.all(
+      djs.map(async (dj: any) => {
+        try {
+          const userColl = mongoose.connection.collection('users');
+          const user = await userColl.findOne({ id: dj.userId });
+          return {
+            ...dj,
+            userId: user ? {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            } : null,
+          };
+        } catch (err) {
+          console.error(`Failed to fetch user for DJ ${dj.id}:`, err);
+          return {
+            ...dj,
+            userId: null,
+          };
+        }
+      })
+    );
+
+    // If search also targets user.name, filter the results
+    let filtered = djsWithUsers;
     if (search) {
       const r = new RegExp(search, "i");
-      filtered = djs.filter((dj: any) => {
+      filtered = djsWithUsers.filter((dj: any) => {
         const user = (dj as any).userId as any;
         return r.test(dj.bio || "") || (user && r.test(user.name || ""));
       });

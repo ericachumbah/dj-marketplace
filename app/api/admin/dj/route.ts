@@ -1,49 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
-// Mock DJ data for development (in-memory)
-const mockDJs = [
-  {
-    id: "dj-1",
-    user: { id: "user-1", name: "John Doe", email: "john@example.com" },
-    status: "PENDING",
-    genres: ["House", "Techno"],
-    hourlyRate: 150,
-    city: "New York",
-    rating: 4.5,
-    totalBookings: 5,
-    totalReviews: 3,
-    createdAt: new Date("2024-01-15"),
-    _count: { bookings: 5, reviews: 3 },
-  },
-  {
-    id: "dj-2",
-    user: { id: "user-2", name: "Jane Smith", email: "jane@example.com" },
-    status: "PENDING",
-    genres: ["Hip-Hop", "R&B"],
-    hourlyRate: 200,
-    city: "Los Angeles",
-    rating: 4.8,
-    totalBookings: 12,
-    totalReviews: 10,
-    createdAt: new Date("2024-01-20"),
-    _count: { bookings: 12, reviews: 10 },
-  },
-  {
-    id: "dj-3",
-    user: { id: "user-3", name: "Mike Johnson", email: "mike@example.com" },
-    status: "VERIFIED",
-    genres: ["Afrobeats", "Makossa"],
-    hourlyRate: 180,
-    city: "Atlanta",
-    rating: 4.6,
-    totalBookings: 8,
-    totalReviews: 7,
-    createdAt: new Date("2024-01-10"),
-    _count: { bookings: 8, reviews: 7 },
-  },
-];
+import { connectToDatabase } from "@/lib/mongoose";
+import DJProfile from "@/models/DJProfile";
+import mongoose from "mongoose";
 
 export async function GET(req: NextRequest) {
   try {
@@ -64,6 +24,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    await connectToDatabase();
+
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status") || "PENDING";
     const page = parseInt(searchParams.get("page") || "1");
@@ -71,13 +33,52 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    // Filter mock data by status
-    const filtered = mockDJs.filter(dj => dj.status === status);
-    const total = filtered.length;
-    const djs = filtered.slice(skip, skip + limit);
+    const query = { status };
+    const total = await DJProfile.countDocuments(query);
+
+    const djs = await DJProfile.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Manually fetch user data since we use custom string IDs (cuid)
+    const djsWithUsers = await Promise.all(
+      djs.map(async (dj: any) => {
+        try {
+          const userColl = mongoose.connection.collection('users');
+          const user = await userColl.findOne({ id: dj.userId });
+          return {
+            ...dj,
+            user: user ? {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            } : null,
+            userId: dj.userId, // Keep original for internal use
+            _count: {
+              bookings: 0,
+              reviews: 0,
+            },
+          };
+        } catch (err) {
+          console.error(`Failed to fetch user for DJ ${dj.id}:`, err);
+          return {
+            ...dj,
+            user: null,
+            userId: dj.userId,
+            _count: {
+              bookings: 0,
+              reviews: 0,
+            },
+          };
+        }
+      })
+    );
 
     return NextResponse.json({
-      djs,
+      djs: djsWithUsers,
       pagination: {
         page,
         limit,

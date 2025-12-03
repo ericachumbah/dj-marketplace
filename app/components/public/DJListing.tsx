@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, MapPin, DollarSign, Music, Search } from "lucide-react";
+import { Star, MapPin, Euro, Music, Search } from "lucide-react";
 
 interface DJ {
   id: string;
@@ -279,7 +279,7 @@ export default function DJListing() {
 
                       {/* Rate */}
                       <div className="flex items-center text-gray-700 mb-2">
-                        <DollarSign className="w-4 h-4 mr-1" />
+                        <Euro className="w-4 h-4 mr-1" />
                         <span className="text-sm font-medium">
                           €{dj.hourlyRate}/hour
                         </span>
