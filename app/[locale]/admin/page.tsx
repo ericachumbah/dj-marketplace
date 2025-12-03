@@ -1,8 +1,9 @@
-import AdminDashboard from "@/app/components/admin/Dashboard";
+import dynamic from "next/dynamic";
 
-export function generateStaticParams() {
-  return [];
-}
+const AdminDashboard = dynamic(
+  () => import("@/app/components/admin/Dashboard"),
+  { ssr: false }
+);
 
 export default function AdminPage() {
   return <AdminDashboard />;
