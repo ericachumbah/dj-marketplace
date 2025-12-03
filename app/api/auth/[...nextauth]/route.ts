@@ -103,8 +103,13 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60,
   },
 
-  secret: process.env.NEXTAUTH_SECRET || "fallback-secret-change-in-production",
+  secret: process.env.NEXTAUTH_SECRET || (process.env.NODE_ENV === "production" ? "prod-fallback-secret-12345678901234567890" : "dev-secret-key-change-in-production-12345678901234567890"),
 };
+
+// Log config for debugging
+if (process.env.NODE_ENV === "production") {
+  console.log("[NextAuth] Production mode - NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
+}
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
