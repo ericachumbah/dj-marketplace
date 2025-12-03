@@ -25,8 +25,8 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          // Check if email is verified
-          if (!user.emailVerified) {
+          // Check if email is verified (skip in development for easier testing)
+          if (!user.emailVerified && process.env.NODE_ENV === "production") {
             throw new Error("Please verify your email before signing in");
           }
 

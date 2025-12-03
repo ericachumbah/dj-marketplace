@@ -49,13 +49,17 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user (not verified yet)
+    // Create user
+    // In development: auto-verify email for easier testing
+    // In production: require email verification
+    const emailVerified = process.env.NODE_ENV === "development" ? new Date() : null;
+
     const userDoc = new User({
       email,
       name,
       password: hashedPassword,
       role: role as "USER" | "DJ" | "ADMIN",
-      emailVerified: null,
+      emailVerified,
     });
     const user = await userDoc.save();
 
@@ -63,29 +67,37 @@ export async function POST(request: NextRequest) {
     const token = generateVerificationToken();
     const expiresAt = generateExpirationDate(24); // 24 hours
 
-    // Store verification token
-    await EmailVerificationToken.create({
-      email,
-      token,
-      expires: expiresAt,
-    });
+    // Store verification token (only in production)
+    if (process.env.NODE_ENV === "production") {
+      await EmailVerificationToken.create({
+        email,
+        token,
+        expires: expiresAt,
+      });
+    }
 
-    // Send verification email
-    const baseUrl =
-      process.env.NEXTAUTH_URL ||
-      (request.headers.get("x-forwarded-proto") === "https"
-        ? "https"
-        : "http") +
-        "://" +
-        (request.headers.get("x-forwarded-host") || request.headers.get("host"));
+    // Send verification email (only in production)
+    let emailSent = false;
+    if (process.env.NODE_ENV === "production") {
+      const baseUrl =
+        process.env.NEXTAUTH_URL ||
+        (request.headers.get("x-forwarded-proto") === "https"
+          ? "https"
+          : "http") +
+          "://" +
+          (request.headers.get("x-forwarded-host") || request.headers.get("host"));
 
-    const emailSent = await sendVerificationEmail(email, token, baseUrl);
+      emailSent = await sendVerificationEmail(email, token, baseUrl);
+    }
 
     return NextResponse.json(
       {
-        message: emailSent
-          ? "Registration successful! Please check your email to verify your account."
-          : "Registration successful! Email verification failed to send. Please contact support.",
+        message: 
+          process.env.NODE_ENV === "development"
+            ? "Registration successful! You can now sign in."
+            : emailSent
+              ? "Registration successful! Please check your email to verify your account."
+              : "Registration successful! Email verification failed to send. Please contact support.",
         user: {
           id: user.id,
           email: user.email,
@@ -93,7 +105,7 @@ export async function POST(request: NextRequest) {
           role: user.role,
           emailVerified: user.emailVerified,
         },
-        emailSent,
+        emailSent: process.env.NODE_ENV === "production" ? emailSent : false,
       },
       { status: 201 }
     );
