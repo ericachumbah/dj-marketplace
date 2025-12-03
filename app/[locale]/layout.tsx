@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 
 export async function generateStaticParams() {
-  return [{ locale: "en" }, { locale: "fr" }];
+  // Don't pre-render locale-specific routes, let them be generated on-demand
+  return [];
 }
 
 export default async function LocaleLayout({

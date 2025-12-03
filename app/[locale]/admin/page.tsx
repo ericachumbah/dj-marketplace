@@ -1,13 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
-export const revalidate = 0;
-
-const AdminDashboard = dynamic(
-  () => import("@/app/components/admin/Dashboard"),
-  { ssr: false, loading: () => <div>Loading...</div> }
-);
+import AdminDashboard from "@/app/components/admin/Dashboard";
 
 export default function AdminPage() {
   return <AdminDashboard />;
