@@ -76,25 +76,23 @@ export const authOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      // Handle cases where baseUrl is empty (during build)
-      if (!baseUrl) {
-        return "/";
-      }
-
+      // Use a default baseUrl if not provided (during build)
+      const safeBaseUrl = baseUrl || "https://mix-factory.vercel.app";
+      
       try {
         // Parse the URL
-        const urlObj = new URL(url, baseUrl);
+        const urlObj = new URL(url, safeBaseUrl);
         
         // Allow callback URLs from the same origin
-        if (urlObj.origin !== baseUrl) {
-          return baseUrl;
+        if (urlObj.origin !== safeBaseUrl) {
+          return safeBaseUrl;
         }
 
         return url;
       } catch (error) {
         // If URL parsing fails, return baseUrl
         console.error("URL redirect error:", error);
-        return baseUrl;
+        return safeBaseUrl;
       }
     },
 
