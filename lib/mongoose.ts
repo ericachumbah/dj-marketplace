@@ -20,12 +20,20 @@ export async function connectToDatabase() {
     return mongoose;
   }
 
-  globalAny._mongoosePromise = mongoose.connect(MONGODB_URI as string, {
-    // useUnifiedTopology / useNewUrlParser are defaults in modern mongoose
-  });
+  try {
+    globalAny._mongoosePromise = mongoose.connect(MONGODB_URI as string, {
+      // useUnifiedTopology / useNewUrlParser are defaults in modern mongoose
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+    });
 
-  await globalAny._mongoosePromise;
-  return mongoose;
+    const result = await globalAny._mongoosePromise;
+    console.log("[MongoDB] Connected successfully");
+    return result;
+  } catch (error) {
+    console.error("[MongoDB] Connection error:", error instanceof Error ? error.message : String(error));
+    throw error;
+  }
 }
 
 export default mongoose;
