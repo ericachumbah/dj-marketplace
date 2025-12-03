@@ -22,7 +22,9 @@ function SignInForm() {
   useEffect(() => {
     const errorParam = searchParams.get("error");
     if (errorParam) {
-      setError(decodeURIComponent(errorParam));
+      setTimeout(() => {
+        setError(decodeURIComponent(errorParam));
+      }, 0);
     }
   }, [searchParams]);
 
@@ -34,19 +36,18 @@ function SignInForm() {
       const result = await signIn("credentials", { 
         email, 
         password, 
-        redirect: false,
-        callbackUrl: `/${locale}/dashboard`
+        redirect: true,
+        callbackUrl: `/${locale}/`
       });
       
       if (result?.error) {
         setError(result.error || "Sign in failed");
-      } else if (result?.ok) {
-        window.location.href = result.url || `/${locale}/dashboard`;
+        setLoading(false);
       }
+      // If successful, redirect will be handled by NextAuth
     } catch (err) {
       setError("An error occurred. Please try again.");
       console.error("Sign in error:", err);
-    } finally {
       setLoading(false);
     }
   };
@@ -153,7 +154,7 @@ function SignInForm() {
         </p>
         <p className="border-t pt-3">
           Want to become a DJ?{" "}
-          <Link href={`/${locale}/dj/register`} className="text-blue-600 hover:underline font-medium">
+          <Link href={`/${locale}/dj/signup`} className="text-blue-600 hover:underline font-medium">
             Register here
           </Link>
         </p>

@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-require('dotenv').config({ path: '.env.local' })
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
-const cuid = require('cuid')
+import dotenv from 'dotenv'
+import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
+import cuid from 'cuid'
+
+dotenv.config({ path: '.env.local' })
 
 async function main() {
   let mongoUrl = process.env.MONGODB_URI || process.env.DATABASE_URL
@@ -117,7 +119,7 @@ async function main() {
 
   try {
     await mongoose.connection.close()
-  } catch (e) {
+  } catch {
     // ignore
   }
 }

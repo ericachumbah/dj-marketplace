@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Music } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-export default function SignUpPage() {
+export default function DJSignUpPage() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = pathname.split("/")[1] || "en";
@@ -65,7 +65,7 @@ export default function SignUpPage() {
           email: formData.email,
           name: formData.name,
           password: formData.password,
-          role: "USER",
+          role: "DJ",
         }),
       });
 
@@ -90,8 +90,11 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-3xl font-bold text-center mb-2">Create Account</h1>
-        <p className="text-center text-gray-600 text-sm mb-8">Join Mix Factory and start your DJ journey</p>
+        <div className="flex items-center justify-center mb-4">
+          <Music className="w-8 h-8 text-blue-600 mr-2" />
+          <h1 className="text-3xl font-bold">Become a DJ</h1>
+        </div>
+        <p className="text-center text-gray-600 text-sm mb-8">Create your DJ account and start taking bookings</p>
 
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3">
@@ -103,8 +106,8 @@ export default function SignUpPage() {
         {success && (
           <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex gap-3">
             <div>
-              <p className="text-sm text-green-800 font-medium">✓ Account created successfully!</p>
-              <p className="text-xs text-green-600 mt-1">Please check your email to verify your account. You&apos;ll be redirected to sign in shortly.</p>
+              <p className="text-sm text-green-800 font-medium">✓ DJ Account created successfully!</p>
+              <p className="text-xs text-green-600 mt-1">Redirecting to sign in...</p>
             </div>
           </div>
         )}
@@ -121,7 +124,7 @@ export default function SignUpPage() {
               value={formData.name}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="John Doe"
+              placeholder="Your Name"
               required
               disabled={loading}
             />
@@ -203,8 +206,8 @@ export default function SignUpPage() {
             disabled={loading}
             className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Mail className="w-4 h-4" />
-            {loading ? "Creating Account..." : "Sign Up"}
+            <Music className="w-4 h-4" />
+            {loading ? "Creating DJ Account..." : "Register as DJ"}
           </button>
         </form>
 
@@ -219,9 +222,9 @@ export default function SignUpPage() {
 
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm">
           <p className="text-blue-800">
-            <strong>Want to become a DJ?</strong>{" "}
-            <Link href={`/${locale}/dj/signup`} className="text-blue-600 hover:underline font-medium">
-              Sign up as a DJ instead
+            Not a DJ?{" "}
+            <Link href={`/${locale}/auth/signup`} className="text-blue-600 hover:underline font-medium">
+              Sign up as a regular user
             </Link>
           </p>
         </div>

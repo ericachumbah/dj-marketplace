@@ -34,7 +34,7 @@ export default function DJDashboardPage() {
     }
 
     // Fetch DJ profile
-    fetch("/api/dj/profile")
+    fetch("/api/dj/profile/me")
       .then((res) => res.json())
       .then((data) => {
         if (data.id) {

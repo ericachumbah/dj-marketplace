@@ -227,10 +227,10 @@ export default function DJRegistrationForm() {
           
           <div className="space-y-4">
             <Link
-              href={`/${locale}/auth/signup`}
+              href={`/${locale}/dj/signup`}
               className="block w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition"
             >
-              Create Account
+              Create DJ Account
             </Link>
             
             <div className="relative">

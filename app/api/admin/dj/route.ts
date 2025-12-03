@@ -94,3 +94,90 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function PUT(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const userRole = (session.user as any).role;
+    if (userRole !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Forbidden: Admin access required" },
+        { status: 403 }
+      );
+    }
+
+    await connectToDatabase();
+
+    const { searchParams } = new URL(req.url);
+    const djId = searchParams.get("djId");
+    const body = await req.json();
+    const { status, notes } = body;
+
+    if (!djId || !status) {
+      return NextResponse.json(
+        { error: "DJ ID and status are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!["VERIFIED", "REJECTED", "SUSPENDED", "PENDING"].includes(status)) {
+      return NextResponse.json(
+        { error: "Invalid status" },
+        { status: 400 }
+      );
+    }
+
+    const updateData: any = {
+      status,
+    };
+
+    if (status === "VERIFIED") {
+      updateData.verifiedAt = new Date();
+    }
+
+    const updatedDJ = await DJProfile.findOneAndUpdate(
+      { id: djId },
+      updateData,
+      { new: true, lean: true }
+    );
+
+    if (!updatedDJ) {
+      return NextResponse.json(
+        { error: "DJ profile not found" },
+        { status: 404 }
+      );
+    }
+
+    // Fetch user data
+    try {
+      const userColl = mongoose.connection.collection('users');
+      const user = await userColl.findOne({ id: updatedDJ.userId });
+      if (user) {
+        updatedDJ.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
+      }
+    } catch (err) {
+      console.error(`Failed to fetch user for DJ ${updatedDJ.id}:`, err);
+    }
+
+    return NextResponse.json(updatedDJ, { status: 200 });
+  } catch (error) {
+    console.error("Update DJ Status Error:", error);
+    return NextResponse.json(
+      { error: "Failed to update DJ status" },
+      { status: 500 }
+    );
+  }
+}

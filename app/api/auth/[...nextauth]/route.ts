@@ -75,7 +75,28 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
 
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl, token }) {
+      // If no token, redirect to home
+      if (!token) {
+        return baseUrl;
+      }
+
+      // Extract locale from url if present
+      const urlObj = new URL(url, baseUrl);
+      const pathname = urlObj.pathname;
+      const locale = pathname.split("/")[1] || "en";
+
+      // Redirect DJs to their dashboard
+      if (token.role === "DJ") {
+        return `${baseUrl}/${locale}/dj/dashboard`;
+      }
+
+      // Redirect admins to their dashboard
+      if (token.role === "ADMIN") {
+        return `${baseUrl}/${locale}/admin`;
+      }
+
+      // For other users, handle the redirect URL
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;

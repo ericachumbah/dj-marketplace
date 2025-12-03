@@ -1,55 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession, type Session } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
-// Mock DJ data for development
-const mockDJs: Record<string, any> = {
-  "dj-1": {
-    id: "dj-1",
-    userId: "user-1",
-    user: { id: "user-1", name: "John Doe", email: "john@example.com" },
-    status: "PENDING",
-    genres: ["House", "Techno"],
-    hourlyRate: 150,
-    experience: 5,
-    city: "New York",
-    bio: "Professional DJ with 5 years of experience",
-    credentials: [],
-    createdAt: new Date("2024-01-15"),
-  },
-  "dj-2": {
-    id: "dj-2",
-    userId: "user-2",
-    user: { id: "user-2", name: "Jane Smith", email: "jane@example.com" },
-    status: "PENDING",
-    genres: ["Hip-Hop", "R&B"],
-    hourlyRate: 200,
-    experience: 8,
-    city: "Los Angeles",
-    bio: "Experienced hip-hop DJ",
-    credentials: [],
-    createdAt: new Date("2024-01-20"),
-  },
-  "dj-3": {
-    id: "dj-3",
-    userId: "user-3",
-    user: { id: "user-3", name: "Mike Johnson", email: "mike@example.com" },
-    status: "VERIFIED",
-    genres: ["Afrobeats", "Makossa"],
-    hourlyRate: 180,
-    experience: 10,
-    city: "Atlanta",
-    bio: "Afrobeats specialist",
-    credentials: [],
-    createdAt: new Date("2024-01-10"),
-  },
-};
+import { connectToDatabase } from "@/lib/mongoose";
+import DJProfile from "@/models/DJProfile";
+import mongoose from "mongoose";
 
 async function requireAdmin(session: Session | null): Promise<boolean> {
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user) {
     return false;
   }
-  return true;
+  const userRole = (session.user as any).role;
+  return userRole === "ADMIN";
 }
 
 export async function GET(
@@ -66,14 +27,32 @@ export async function GET(
       );
     }
 
+    await connectToDatabase();
+
     const { id } = await params;
-    const djProfile = mockDJs[id];
+    const djProfile = await DJProfile.findOne({ id }).lean();
 
     if (!djProfile) {
       return NextResponse.json(
         { error: "DJ profile not found" },
         { status: 404 }
       );
+    }
+
+    // Fetch user data
+    try {
+      const userColl = mongoose.connection.collection('users');
+      const user = await userColl.findOne({ id: djProfile.userId });
+      if (user) {
+        djProfile.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
+      }
+    } catch (err) {
+      console.error(`Failed to fetch user for DJ ${djProfile.id}:`, err);
     }
 
     return NextResponse.json(djProfile);
@@ -100,6 +79,8 @@ export async function PUT(
       );
     }
 
+    await connectToDatabase();
+
     const { id } = await params;
     const body = await req.json();
     const { status, verificationNotes } = body;
@@ -111,17 +92,45 @@ export async function PUT(
       );
     }
 
-    // Update mock DJ
-    if (mockDJs[id]) {
-      mockDJs[id].status = status;
-      mockDJs[id].verificationNotes = verificationNotes;
-      if (status === "VERIFIED") {
-        mockDJs[id].verifiedAt = new Date();
+    const updateData: any = {
+      status,
+    };
+
+    if (status === "VERIFIED") {
+      updateData.verifiedAt = new Date();
+    }
+
+    const updatedDJ = await DJProfile.findOneAndUpdate(
+      { id },
+      updateData,
+      { new: true, lean: true }
+    );
+
+    if (!updatedDJ) {
+      return NextResponse.json(
+        { error: "DJ profile not found" },
+        { status: 404 }
+      );
+    }
+
+    // Fetch user data
+    try {
+      const userColl = mongoose.connection.collection('users');
+      const user = await userColl.findOne({ id: updatedDJ.userId });
+      if (user) {
+        updatedDJ.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
       }
+    } catch (err) {
+      console.error(`Failed to fetch user for DJ ${updatedDJ.id}:`, err);
     }
 
     return NextResponse.json({
-      ...mockDJs[id],
+      ...updatedDJ,
       message: "DJ status updated successfully",
     });
   } catch (error) {

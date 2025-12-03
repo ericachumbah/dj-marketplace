@@ -78,17 +78,17 @@ export default function AdminDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStatus, session, status, router]);
 
-  const handleVerifyDJ = async (djId: string, status: "VERIFIED" | "REJECTED") => {
+  const handleVerifyDJ = async (djId: string, newStatus: "VERIFIED" | "REJECTED" | "SUSPENDED") => {
     setSubmitting(true);
     try {
-      const response = await fetch(`/api/admin/dj/${djId}`, {
+      const response = await fetch(`/api/admin/dj?djId=${djId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          status,
-          verificationNotes,
+          status: newStatus,
+          notes: verificationNotes,
         }),
       });
 
@@ -96,6 +96,9 @@ export default function AdminDashboard() {
         setSelectedDJ(null);
         setVerificationNotes("");
         fetchDJs(pagination.page);
+      } else {
+        const data = await response.json();
+        console.error("Error updating DJ:", data);
       }
     } catch (error) {
       console.error("Error updating DJ status:", error);

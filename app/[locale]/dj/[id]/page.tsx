@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, MapPin, Music, ArrowLeft, Mail, Phone, Globe, Instagram, Twitter } from "lucide-react";
+import BookingModal from "@/app/components/BookingModal";
 
 interface DJProfile {
   id: string;
@@ -40,6 +41,7 @@ export default function DJProfilePage() {
   const [dj, setDj] = useState<DJProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   useEffect(() => {
     if (!djId) return;
@@ -273,15 +275,39 @@ export default function DJProfilePage() {
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
-              <button className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
+              <button
+                onClick={() => setIsBookingModalOpen(true)}
+                className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition"
+              >
                 Book Now
               </button>
-              <button className="px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-lg hover:bg-gray-300 transition">
+              <button
+                onClick={() => {
+                  if (dj?.user?.email) {
+                    window.location.href = `mailto:${dj.user.email}`;
+                  }
+                }}
+                className="px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-lg hover:bg-gray-300 transition"
+              >
                 Contact
               </button>
             </div>
           </div>
         </div>
+
+        {/* Booking Modal */}
+        {dj && (
+          <BookingModal
+            isOpen={isBookingModalOpen}
+            djId={dj.id}
+            djName={dj.user?.name || "DJ"}
+            hourlyRate={dj.hourlyRate}
+            onClose={() => setIsBookingModalOpen(false)}
+            onSuccess={() => {
+              // Could refresh DJ data or show confirmation here
+            }}
+          />
+        )}
       </div>
     </div>
   );
