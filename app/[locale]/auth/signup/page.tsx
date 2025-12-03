@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Mail, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { usePathname } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default function SignUpPage() {
   const router = useRouter();
   const pathname = usePathname();

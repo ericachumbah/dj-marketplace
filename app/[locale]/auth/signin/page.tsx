@@ -7,6 +7,8 @@ import Link from "next/link";
 import { Mail, Github, Chrome, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { usePathname } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

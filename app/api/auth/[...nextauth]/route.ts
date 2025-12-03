@@ -76,15 +76,26 @@ export const authOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      // Parse the URL
-      const urlObj = new URL(url, baseUrl);
-      
-      // Allow callback URLs from the same origin
-      if (urlObj.origin !== baseUrl) {
-        return baseUrl;
+      // Handle cases where baseUrl is empty (during build)
+      if (!baseUrl) {
+        return "/";
       }
 
-      return url;
+      try {
+        // Parse the URL
+        const urlObj = new URL(url, baseUrl);
+        
+        // Allow callback URLs from the same origin
+        if (urlObj.origin !== baseUrl) {
+          return baseUrl;
+        }
+
+        return url;
+      } catch (error) {
+        // If URL parsing fails, return baseUrl
+        console.error("URL redirect error:", error);
+        return baseUrl;
+      }
     },
 
   },
