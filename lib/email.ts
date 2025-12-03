@@ -1,10 +1,12 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || "gmail",
+  host: process.env.EMAIL_SERVER_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.EMAIL_SERVER_PORT || "587"),
+  secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: process.env.EMAIL_SERVER_USER,
+    pass: process.env.EMAIL_SERVER_PASSWORD,
   },
 });
 
@@ -16,7 +18,7 @@ export async function sendVerificationEmail(
   const verificationUrl = `${baseUrl}/api/auth/verify-email?token=${token}`;
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    from: process.env.EMAIL_SERVER_USER || "noreply@mixfactory.com",
     to: email,
     subject: "Verify your email address - Mix Factory",
     html: `
@@ -62,7 +64,7 @@ export async function sendPasswordResetEmail(
   const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    from: process.env.EMAIL_SERVER_USER || "noreply@mixfactory.com",
     to: email,
     subject: "Reset your password - Mix Factory",
     html: `
