@@ -1,16 +1,42 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Music, Users, CheckCircle, Zap } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import styles from "./page.module.css";
 
-export default async function Home({ 
-  params 
-}: { 
-  params: Promise<{ locale: string }> 
-}) {
-  const { locale = "en" } = await params;
-  const t = getTranslations(locale as Locale);
+export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  
+  const locale = (pathname.split("/")[1] as Locale) || "en";
+  const t = getTranslations(locale);
+
+  useEffect(() => {
+    // If user is authenticated and is a DJ, redirect to dashboard
+    if (status === "authenticated" && (session?.user as any)?.role === "DJ") {
+      router.push(`/${locale}/dj/dashboard`);
+    }
+  }, [session, status, router, locale]);
+
+  // Show loading state while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-900 flex items-center justify-center">
+        <p className="text-white">Loading...</p>
+      </div>
+    );
+  }
+
+  // If DJ, they'll be redirected, so don't render the page
+  if (status === "authenticated" && (session?.user as any)?.role === "DJ") {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-b from-blue-600 to-blue-900 text-white">
