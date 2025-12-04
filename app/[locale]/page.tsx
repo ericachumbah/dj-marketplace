@@ -22,6 +22,10 @@ export default function Home() {
     if (status === "authenticated" && (session?.user as any)?.role === "DJ") {
       router.push(`/${locale}/dj/dashboard`);
     }
+    // If user is authenticated and is an ADMIN, redirect to admin dashboard
+    else if (status === "authenticated" && (session?.user as any)?.role === "ADMIN") {
+      router.push(`/${locale}/admin`);
+    }
   }, [session, status, router, locale]);
 
   // Show loading state while checking authentication
@@ -35,6 +39,11 @@ export default function Home() {
 
   // If DJ, they'll be redirected, so don't render the page
   if (status === "authenticated" && (session?.user as any)?.role === "DJ") {
+    return null;
+  }
+
+  // If ADMIN, they'll be redirected, so don't render the page
+  if (status === "authenticated" && (session?.user as any)?.role === "ADMIN") {
     return null;
   }
 

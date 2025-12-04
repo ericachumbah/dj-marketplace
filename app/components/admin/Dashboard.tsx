@@ -159,16 +159,16 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Admin Dashboard</h1>
 
-        {/* Status Tabs */}
-        <div className="flex gap-2 mb-8">
+        {/* Status Tabs - Responsive */}
+        <div className="flex flex-wrap gap-1 sm:gap-2 mb-6 sm:mb-8">
           {["PENDING", "VERIFIED", "REJECTED", "SUSPENDED"].map((status) => (
             <button
               key={status}
               onClick={() => setSelectedStatus(status)}
-              className={`px-4 py-2 rounded-lg font-medium transition ${
+              className={`px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-base rounded-lg font-medium transition ${
                 selectedStatus === status
                   ? "bg-blue-600 text-white"
                   : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -179,7 +179,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* DJ Table */}
+        {/* DJ Table / Cards */}
         {loading ? (
           <div className="text-center py-12">Loading...</div>
         ) : djs.length === 0 ? (
@@ -188,34 +188,36 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <>
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-gray-100 border-b">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                      Genres
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                      Rate
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                      Rating
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                      Applied
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+            {/* Desktop Table */}
+            <div className="hidden md:block bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-100 border-b">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                        Email
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                        Genres
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                        Rate
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                        Rating
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                        Applied
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
                   {djs.map((dj) => (
                     <tr key={dj.id} className="border-b hover:bg-gray-50">
                       <td className="px-6 py-4">
@@ -317,6 +319,113 @@ export default function AdminDashboard() {
                   ))}
                 </tbody>
               </table>
+              </div>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="md:hidden space-y-4">
+              {djs.map((dj) => (
+                <div key={dj.id} className="bg-white rounded-lg shadow-md p-4 space-y-3">
+                  <div>
+                    <p className="font-semibold text-gray-900">{dj.user.name || "N/A"}</p>
+                    <p className="text-sm text-gray-600">{dj.user.email}</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p className="text-gray-600">Genres</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {dj.genres.slice(0, 2).map((genre) => (
+                          <span
+                            key={genre}
+                            className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                          >
+                            {genre}
+                          </span>
+                        ))}
+                        {dj.genres.length > 2 && (
+                          <span className="text-xs text-gray-600">
+                            +{dj.genres.length - 2}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Rate</p>
+                      <p className="font-medium text-gray-900">€{dj.hourlyRate}/hr</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p className="text-gray-600">Rating</p>
+                      <p className="font-medium text-gray-900">{dj.rating?.toFixed(1) || "0.0"} ⭐</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Applied</p>
+                      <p className="text-gray-900">{new Date(dj.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-2 border-t">
+                    <button
+                      onClick={() => handleOpenRatingModal(dj)}
+                      className="flex-1 text-xs px-2 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                    >
+                      Edit Rating
+                    </button>
+                    <button
+                      onClick={() => setSelectedDJ(dj.id)}
+                      className="flex-1 text-xs px-2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Review
+                    </button>
+                  </div>
+
+                  {selectedDJ === dj.id && (
+                    <div className="space-y-2 bg-gray-50 p-3 rounded">
+                      <textarea
+                        value={verificationNotes}
+                        onChange={(e) =>
+                          setVerificationNotes(e.target.value)
+                        }
+                        placeholder="Add notes..."
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                        rows={2}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() =>
+                            handleVerifyDJ(dj.id, "VERIFIED")
+                          }
+                          disabled={submitting}
+                          className="flex-1 text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleVerifyDJ(dj.id, "REJECTED")
+                          }
+                          disabled={submitting}
+                          className="flex-1 text-xs px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                        >
+                          Reject
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedDJ(null);
+                            setVerificationNotes("");
+                          }}
+                          className="flex-1 text-xs px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
 
             {/* Pagination */}
