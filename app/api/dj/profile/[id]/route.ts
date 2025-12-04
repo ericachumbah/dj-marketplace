@@ -50,9 +50,9 @@ export async function GET(
     }
 
     // Add calculated fields
-    djProfile.rating = 0;
-    djProfile.totalReviews = 0;
-    djProfile.totalBookings = 0;
+    djProfile.rating = djProfile.rating || 0;
+    djProfile.totalReviews = djProfile.totalReviews || 0;
+    djProfile.totalBookings = djProfile.totalBookings || 0;
 
     return NextResponse.json(djProfile, { status: 200 });
   } catch (error) {

@@ -22,6 +22,9 @@ export interface IDJProfile {
   youtube?: string;
   tiktok?: string;
   website?: string;
+  rating?: number;
+  totalReviews?: number;
+  totalBookings?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -46,6 +49,9 @@ const DJProfileSchema = new Schema(
     youtube: { type: String },
     tiktok: { type: String },
     website: { type: String },
+    rating: { type: Number, default: 0, min: 0, max: 5 },
+    totalReviews: { type: Number, default: 0 },
+    totalBookings: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

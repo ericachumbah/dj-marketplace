@@ -17,6 +17,9 @@ interface DJForVerification {
   experience: number;
   credentials: string[];
   status: string;
+  rating?: number;
+  totalReviews?: number;
+  totalBookings?: number;
   createdAt: string;
   _count: {
     bookings: number;
@@ -46,6 +49,12 @@ export default function AdminDashboard() {
   const [selectedDJ, setSelectedDJ] = useState<string | null>(null);
   const [verificationNotes, setVerificationNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [ratingModalDJ, setRatingModalDJ] = useState<DJForVerification | null>(null);
+  const [ratingForm, setRatingForm] = useState({
+    rating: 0,
+    totalReviews: 0,
+    totalBookings: 0,
+  });
 
   const fetchDJs = async (page = 1) => {
     setLoading(true);
@@ -107,6 +116,47 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleOpenRatingModal = (dj: DJForVerification) => {
+    setRatingModalDJ(dj);
+    setRatingForm({
+      rating: dj.rating || 0,
+      totalReviews: dj.totalReviews || 0,
+      totalBookings: dj.totalBookings || 0,
+    });
+  };
+
+  const handleUpdateRating = async () => {
+    if (!ratingModalDJ) return;
+
+    setSubmitting(true);
+    try {
+      const response = await fetch(`/api/admin/dj/rating`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          djId: ratingModalDJ.id,
+          rating: parseFloat(ratingForm.rating.toString()),
+          totalReviews: parseInt(ratingForm.totalReviews.toString()),
+          totalBookings: parseInt(ratingForm.totalBookings.toString()),
+        }),
+      });
+
+      if (response.ok) {
+        setRatingModalDJ(null);
+        fetchDJs(pagination.page);
+      } else {
+        const data = await response.json();
+        console.error("Error updating rating:", data);
+      }
+    } catch (error) {
+      console.error("Error updating rating:", error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -155,6 +205,9 @@ export default function AdminDashboard() {
                       Rate
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                      Rating
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
                       Applied
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
@@ -192,6 +245,19 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4 text-sm font-medium">
                         €{dj.hourlyRate}/hr
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-900">
+                            {dj.rating?.toFixed(1) || "0.0"} ⭐
+                          </span>
+                          <button
+                            onClick={() => handleOpenRatingModal(dj)}
+                            className="ml-2 text-xs px-2 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                          >
+                            Edit
+                          </button>
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {new Date(dj.createdAt).toLocaleDateString()}
@@ -294,6 +360,108 @@ export default function AdminDashboard() {
               )}
             </div>
           </>
+        )}
+
+        {/* Rating Modal */}
+        {ratingModalDJ && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                Edit Rating: {ratingModalDJ.user.name}
+              </h3>
+
+              <div className="space-y-4">
+                {/* Rating */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Star Rating (0-5)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="5"
+                    step="0.5"
+                    value={ratingForm.rating}
+                    onChange={(e) =>
+                      setRatingForm({
+                        ...ratingForm,
+                        rating: parseFloat(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                  <div className="mt-2 flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setRatingForm({ ...ratingForm, rating: star })}
+                        className={`text-2xl transition ${
+                          star <= ratingForm.rating ? "text-yellow-400" : "text-gray-300"
+                        }`}
+                      >
+                        ⭐
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Total Reviews */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Reviews
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={ratingForm.totalReviews}
+                    onChange={(e) =>
+                      setRatingForm({
+                        ...ratingForm,
+                        totalReviews: parseInt(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+
+                {/* Total Bookings */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Bookings
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={ratingForm.totalBookings}
+                    onChange={(e) =>
+                      setRatingForm({
+                        ...ratingForm,
+                        totalBookings: parseInt(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 mt-6">
+                <button
+                  onClick={handleUpdateRating}
+                  disabled={submitting}
+                  className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 font-medium"
+                >
+                  {submitting ? "Updating..." : "Update Rating"}
+                </button>
+                <button
+                  onClick={() => setRatingModalDJ(null)}
+                  disabled={submitting}
+                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50 font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

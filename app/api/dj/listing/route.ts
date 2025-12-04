@@ -80,8 +80,9 @@ export async function GET(req: NextRequest) {
 
     const djsWithStats = (filtered || []).map((dj: any) => ({
       ...dj,
-      totalReviews: 0,
-      totalBookings: 0,
+      totalReviews: dj.totalReviews || 0,
+      totalBookings: dj.totalBookings || 0,
+      rating: dj.rating || 0,
       user: (dj as any).userId || null,
     }));
 
