@@ -39,6 +39,10 @@ export async function POST(request: NextRequest) {
     // Check if user exists
     const existingUser = await User.findOne({ email }).lean();
     console.log(`[Register] Checking email ${email}: ${existingUser ? 'EXISTS' : 'NOT FOUND'}`);
+    
+    // Debug: List all users
+    const allUsers = await User.find().lean();
+    console.log(`[Register] Total users in DB: ${allUsers.length}`, allUsers.map(u => u.email));
 
     if (existingUser) {
       console.log(`[Register] Existing user found:`, existingUser);

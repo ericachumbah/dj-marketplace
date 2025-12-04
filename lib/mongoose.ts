@@ -6,6 +6,10 @@ if (!MONGODB_URI) {
   console.warn(
     "No MONGODB_URI or DATABASE_URL found in env. Mongoose will not connect automatically."
   );
+} else {
+  // Log first 50 chars of URI to help debug connection issues
+  const sanitized = MONGODB_URI.substring(0, 50) + "...";
+  console.log("[MongoDB] Connecting to:", sanitized);
 }
 
 const globalAny = global as any;
