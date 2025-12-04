@@ -25,6 +25,9 @@ export async function POST(req: NextRequest) {
       hourlyRate,
       experience,
       instagram,
+      facebook,
+      youtube,
+      tiktok,
       twitter,
       website,
       phone,
@@ -68,6 +71,9 @@ export async function POST(req: NextRequest) {
       hourlyRate: parseFloat(hourlyRate),
       experience: parseInt(experience),
       instagram,
+      facebook,
+      youtube,
+      tiktok,
       twitter,
       website,
       phone,
@@ -150,6 +156,9 @@ export async function PUT(req: NextRequest) {
     // Text fields
     if (body.bio !== undefined) updateData.bio = body.bio;
     if (body.instagram !== undefined) updateData.instagram = body.instagram;
+    if (body.facebook !== undefined) updateData.facebook = body.facebook;
+    if (body.youtube !== undefined) updateData.youtube = body.youtube;
+    if (body.tiktok !== undefined) updateData.tiktok = body.tiktok;
     if (body.twitter !== undefined) updateData.twitter = body.twitter;
     if (body.website !== undefined) updateData.website = body.website;
     if (body.phone !== undefined) updateData.phone = body.phone;

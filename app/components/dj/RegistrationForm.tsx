@@ -12,6 +12,9 @@ interface DJFormData {
   hourlyRate: string;
   experience: string;
   instagram: string;
+  facebook: string;
+  youtube: string;
+  tiktok: string;
   twitter: string;
   website: string;
   phone: string;
@@ -69,6 +72,9 @@ export default function DJRegistrationForm() {
     hourlyRate: "",
     experience: "",
     instagram: "",
+    facebook: "",
+    youtube: "",
+    tiktok: "",
     twitter: "",
     website: "",
     phone: "",
@@ -96,6 +102,9 @@ export default function DJRegistrationForm() {
             hourlyRate: data.hourlyRate?.toString() || "",
             experience: data.experience?.toString() || "",
             instagram: data.instagram || "",
+            facebook: data.facebook || "",
+            youtube: data.youtube || "",
+            tiktok: data.tiktok || "",
             twitter: data.twitter || "",
             website: data.website || "",
             phone: data.phone || "",
@@ -180,6 +189,9 @@ export default function DJRegistrationForm() {
         hourlyRate: formData.hourlyRate,
         experience: formData.experience,
         instagram: formData.instagram,
+        facebook: formData.facebook,
+        youtube: formData.youtube,
+        tiktok: formData.tiktok,
         twitter: formData.twitter,
         website: formData.website,
         phone: formData.phone,
@@ -341,98 +353,144 @@ export default function DJRegistrationForm() {
             </div>
           </div>
 
-          {/* Hourly Rate */}
-          <div>
-            <label htmlFor="hourlyRate" className="block text-sm font-medium text-gray-700 mb-2">
-              Hourly Rate ($)
-            </label>
-            <input
-              type="number"
-              id="hourlyRate"
-              name="hourlyRate"
-              value={formData.hourlyRate}
-              onChange={handleInputChange}
-              step="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Experience */}
-          <div>
-            <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
-              Years of Experience
-            </label>
-            <input
-              type="number"
-              id="experience"
-              name="experience"
-              value={formData.experience}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Contact Info */}
+          {/* Hourly Rate & Experience */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                Phone
+              <label htmlFor="hourlyRate" className="block text-sm font-medium text-gray-700 mb-2">
+                Hourly Rate ($)
               </label>
               <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
+                type="number"
+                id="hourlyRate"
+                name="hourlyRate"
+                value={formData.hourlyRate}
                 onChange={handleInputChange}
+                step="0.01"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               />
             </div>
             <div>
-              <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
-                Website
+              <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
+                Years of Experience
               </label>
               <input
-                type="url"
-                id="website"
-                name="website"
-                value={formData.website}
+                type="number"
+                id="experience"
+                name="experience"
+                value={formData.experience}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               />
             </div>
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
           {/* Social Media */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="instagram" className="block text-sm font-medium text-gray-700 mb-2">
-                Instagram
-              </label>
-              <input
-                type="text"
-                id="instagram"
-                name="instagram"
-                value={formData.instagram}
-                onChange={handleInputChange}
-                placeholder="@username"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label htmlFor="twitter" className="block text-sm font-medium text-gray-700 mb-2">
-                Twitter
-              </label>
-              <input
-                type="text"
-                id="twitter"
-                name="twitter"
-                value={formData.twitter}
-                onChange={handleInputChange}
-                placeholder="@username"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Social Media Accounts
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="instagram" className="block text-xs font-medium text-gray-600 mb-2">
+                  Instagram
+                </label>
+                <input
+                  type="text"
+                  id="instagram"
+                  name="instagram"
+                  value={formData.instagram}
+                  onChange={handleInputChange}
+                  placeholder="@username"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="facebook" className="block text-xs font-medium text-gray-600 mb-2">
+                  Facebook
+                </label>
+                <input
+                  type="text"
+                  id="facebook"
+                  name="facebook"
+                  value={formData.facebook}
+                  onChange={handleInputChange}
+                  placeholder="@username"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="youtube" className="block text-xs font-medium text-gray-600 mb-2">
+                  YouTube
+                </label>
+                <input
+                  type="text"
+                  id="youtube"
+                  name="youtube"
+                  value={formData.youtube}
+                  onChange={handleInputChange}
+                  placeholder="@username"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="tiktok" className="block text-xs font-medium text-gray-600 mb-2">
+                  TikTok
+                </label>
+                <input
+                  type="text"
+                  id="tiktok"
+                  name="tiktok"
+                  value={formData.tiktok}
+                  onChange={handleInputChange}
+                  placeholder="@username"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="twitter" className="block text-xs font-medium text-gray-600 mb-2">
+                  Twitter (X)
+                </label>
+                <input
+                  type="text"
+                  id="twitter"
+                  name="twitter"
+                  value={formData.twitter}
+                  onChange={handleInputChange}
+                  placeholder="@username"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="website" className="block text-xs font-medium text-gray-600 mb-2">
+                  Website
+                </label>
+                <input
+                  type="url"
+                  id="website"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleInputChange}
+                  placeholder="https://example.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
           </div>
 
