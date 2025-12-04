@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     
     // Debug: List all users
     const allUsers = await User.find().lean();
-    console.log(`[Register] Total users in DB: ${allUsers.length}`, allUsers.map(u => u.email));
+    console.log(`[Register] Total users in DB: ${allUsers.length}`, allUsers.map((u: any) => u.email));
 
     if (existingUser) {
       console.log(`[Register] Existing user found:`, existingUser);
