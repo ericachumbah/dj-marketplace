@@ -52,6 +52,7 @@ export default function DJListing() {
   const [djs, setDjs] = useState<DJ[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
@@ -123,11 +124,30 @@ export default function DJListing() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold mb-8">Find Your DJ</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Find Your DJ</h1>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        {/* Mobile: Simple Search Bar Only */}
+        <div className="md:hidden mb-6 flex gap-2">
+          <input
+            type="text"
+            name="search"
+            value={filters.search}
+            onChange={handleFilterChange}
+            placeholder="Search DJ..."
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+          />
+          <button
+            onClick={handleSearch}
+            disabled={loading}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Desktop: Full Filters */}
+        <div className="hidden md:block bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
