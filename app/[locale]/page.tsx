@@ -81,6 +81,12 @@ export default function Home() {
               {t.hero.cta}
             </Link>
             <Link
+              href={`/${locale}/dj/signup`}
+              className="bg-yellow-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-yellow-600 transition shadow-lg"
+            >
+              Become a DJ
+            </Link>
+            <Link
               href={`/${locale}/auth/signin`}
               className="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-blue-600 transition shadow-lg"
             >
@@ -142,12 +148,20 @@ export default function Home() {
           <p className="text-lg mb-6 text-blue-100">
             Join our platform and reach more customers
           </p>
-          <Link
-            href={`/${locale}/auth/signin`}
-            className="bg-white text-blue-700 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition inline-block"
-          >
-            {t.dj.register}
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href={`/${locale}/dj/signup`}
+              className="bg-yellow-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-yellow-600 transition inline-block"
+            >
+              Register as DJ
+            </Link>
+            <Link
+              href={`/${locale}/auth/signin`}
+              className="bg-white text-blue-700 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition inline-block"
+            >
+              Sign In
+            </Link>
+          </div>
         </div>
       </div>
     </div>
