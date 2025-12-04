@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const allUsers = await User.find().lean();
     return NextResponse.json({
       totalUsers: allUsers.length,
-      users: allUsers.map(u => ({ email: (u as any).email, role: (u as any).role }))
+      users: allUsers.map((u: any) => ({ email: u.email, role: u.role }))
     });
   } catch (error) {
     return NextResponse.json({ error: String(error) }, { status: 500 });
