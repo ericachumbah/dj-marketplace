@@ -257,7 +257,7 @@ export default function DJProfilePage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Visit Website"
-                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-blue-500 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all duration-300 ease-out transform hover:scale-125 hover:shadow-lg"
                     >
                       <Globe className="w-5 h-5" />
                     </a>
@@ -268,7 +268,7 @@ export default function DJProfilePage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Visit Instagram"
-                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-pink-500 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-pink-50 text-pink-600 hover:bg-gradient-to-r hover:from-pink-400 hover:via-red-500 hover:to-yellow-500 hover:text-white rounded-lg transition-all duration-300 ease-out transform hover:scale-125 hover:shadow-lg"
                     >
                       <Instagram className="w-5 h-5" />
                     </a>
@@ -279,7 +279,7 @@ export default function DJProfilePage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Visit Facebook"
-                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-blue-600 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 hover:bg-blue-700 hover:text-white rounded-lg transition-all duration-300 ease-out transform hover:scale-125 hover:shadow-lg"
                     >
                       <Facebook className="w-5 h-5" />
                     </a>
@@ -290,7 +290,7 @@ export default function DJProfilePage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Visit YouTube"
-                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-red-600 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all duration-300 ease-out transform hover:scale-125 hover:shadow-lg"
                     >
                       <Youtube className="w-5 h-5" />
                     </a>
@@ -301,7 +301,7 @@ export default function DJProfilePage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Visit TikTok"
-                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-black hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 text-gray-900 hover:bg-gray-900 hover:text-white rounded-lg transition-all duration-300 ease-out transform hover:scale-125 hover:shadow-lg"
                     >
                       <Music2 className="w-5 h-5" />
                     </a>
@@ -312,7 +312,7 @@ export default function DJProfilePage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Visit X (Twitter)"
-                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-gray-900 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-50 text-gray-800 hover:bg-gray-900 hover:text-white rounded-lg transition-all duration-300 ease-out transform hover:scale-125 hover:shadow-lg"
                     >
                       <Twitter className="w-5 h-5" />
                     </a>
