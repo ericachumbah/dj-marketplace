@@ -84,7 +84,7 @@ export default function Home() {
               href={`/${locale}/dj/signup`}
               className="bg-yellow-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-yellow-600 transition shadow-lg"
             >
-              Become a DJ
+              Register as DJ
             </Link>
             <Link
               href={`/${locale}/auth/signin`}
