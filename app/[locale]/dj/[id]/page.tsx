@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, MapPin, Music, ArrowLeft, Mail, Phone, Globe, Instagram, Twitter } from "lucide-react";
+import { Star, MapPin, Music, ArrowLeft, Mail, Phone, Globe, Instagram, Twitter, Facebook, Youtube, Music2 } from "lucide-react";
 import BookingModal from "@/app/components/BookingModal";
 
 interface DJProfile {
@@ -23,6 +23,9 @@ interface DJProfile {
   phone?: string;
   website?: string;
   instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  tiktok?: string;
   twitter?: string;
   status: string;
   verifiedAt?: string;
@@ -214,62 +217,107 @@ export default function DJProfilePage() {
             {/* Contact & Social */}
             <div className="mb-8">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Contact & Social</h2>
-              <div className="flex flex-wrap gap-2 sm:gap-4">
-                {dj.user.email && (
-                  <a
-                    href={`mailto:${dj.user.email}`}
-                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
-                  >
-                    <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="hidden sm:inline">{dj.user.email}</span>
-                    <span className="sm:hidden">Email</span>
-                  </a>
-                )}
-                {dj.phone && (
-                  <a
-                    href={`tel:${dj.phone}`}
-                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
-                  >
-                    <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="hidden sm:inline">{dj.phone}</span>
-                    <span className="sm:hidden">Phone</span>
-                  </a>
-                )}
-                {dj.website && (
-                  <a
-                    href={dj.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
-                  >
-                    <Globe className="w-5 h-5" />
-                    <span>Website</span>
-                  </a>
-                )}
-                {dj.instagram && (
-                  <a
-                    href={`https://instagram.com/${dj.instagram.replace("@", "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
-                  >
-                    <Instagram className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="hidden sm:inline">{dj.instagram}</span>
-                    <span className="sm:hidden">IG</span>
-                  </a>
-                )}
-                {dj.twitter && (
-                  <a
-                    href={`https://twitter.com/${dj.twitter.replace("@", "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
-                  >
-                    <Twitter className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="hidden sm:inline">{dj.twitter}</span>
-                    <span className="sm:hidden">X</span>
-                  </a>
-                )}
+              
+              {/* Contact Section */}
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Contact</h3>
+                <div className="flex flex-wrap gap-2 sm:gap-3">
+                  {dj.user.email && (
+                    <a
+                      href={`mailto:${dj.user.email}`}
+                      title={dj.user.email}
+                      className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
+                    >
+                      <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="hidden sm:inline text-gray-700">{dj.user.email}</span>
+                      <span className="sm:hidden text-gray-700">Email</span>
+                    </a>
+                  )}
+                  {dj.phone && (
+                    <a
+                      href={`tel:${dj.phone}`}
+                      title={dj.phone}
+                      className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm sm:text-base"
+                    >
+                      <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="hidden sm:inline text-gray-700">{dj.phone}</span>
+                      <span className="sm:hidden text-gray-700">Phone</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Social Media Section - Icon Only */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Follow</h3>
+                <div className="flex flex-wrap gap-3">
+                  {dj.website && (
+                    <a
+                      href={dj.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Visit Website"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-blue-500 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                    >
+                      <Globe className="w-5 h-5" />
+                    </a>
+                  )}
+                  {dj.instagram && (
+                    <a
+                      href={`https://instagram.com/${dj.instagram.replace("@", "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Visit Instagram"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-pink-500 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                    >
+                      <Instagram className="w-5 h-5" />
+                    </a>
+                  )}
+                  {dj.facebook && (
+                    <a
+                      href={`https://facebook.com/${dj.facebook.replace("@", "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Visit Facebook"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-blue-600 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                    >
+                      <Facebook className="w-5 h-5" />
+                    </a>
+                  )}
+                  {dj.youtube && (
+                    <a
+                      href={`https://youtube.com/@${dj.youtube.replace("@", "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Visit YouTube"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-red-600 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                    >
+                      <Youtube className="w-5 h-5" />
+                    </a>
+                  )}
+                  {dj.tiktok && (
+                    <a
+                      href={`https://tiktok.com/@${dj.tiktok.replace("@", "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Visit TikTok"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-black hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                    >
+                      <Music2 className="w-5 h-5" />
+                    </a>
+                  )}
+                  {dj.twitter && (
+                    <a
+                      href={`https://twitter.com/${dj.twitter.replace("@", "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Visit X (Twitter)"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-gray-900 hover:text-white rounded-lg transition duration-200 transform hover:scale-110"
+                    >
+                      <Twitter className="w-5 h-5" />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 

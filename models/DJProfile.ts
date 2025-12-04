@@ -18,6 +18,9 @@ export interface IDJProfile {
   zipCode?: string;
   phone?: string;
   instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  tiktok?: string;
   website?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -39,6 +42,9 @@ const DJProfileSchema = new Schema(
     zipCode: { type: String },
     phone: { type: String },
     instagram: { type: String },
+    facebook: { type: String },
+    youtube: { type: String },
+    tiktok: { type: String },
     website: { type: String },
   },
   { timestamps: true }
